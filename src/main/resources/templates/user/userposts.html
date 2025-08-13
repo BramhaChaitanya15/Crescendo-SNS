@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="back mt-5">
+		<!--this page shows the psts of the user as per their username-->
+		<!--as all posts are public their is no security issue here-->
+		<!--this can be altered once the privacy is added-->
+		<div class="container pt-4 pb-5">
+			<div class="container">
+				<div th:each="p,i : ${posts}" class="row mb-4 justify-content-center">
+					<div class="container text-center">
+						<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert m-3"
+							role="alert">
+							<strong class="text-center" th:text="${session.alert.content}"></strong>
+							<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="card card-bg border border-success">
+							<div class="card-header header-bg">
+								<div class="row">
+									<!--area showing user details-->
+									<div class="col-md-2">
+										<a th:if="${!(user.user_id == p.user.user_id)}" class="stretched-link"
+											th:href="@{'/user/other_profile/'+${p.user.user_id}}"></a>
+										<a th:if="${user.user_id == p.user.user_id}" class="stretched-link"
+											th:href="@{/user/profile}"></a>
+										<img th:src="@{'/img/profileImg/'+${p.user.profile_image_name}}" height="40px"
+											width="40px" class="border border-success rounded-circle mt-2" />
+									</div>
+									<div class="col-md-8">
+										<h5 class="mb-1"><a class="stretched-link"
+												th:if="${!(user.user_id == p.user.user_id)}"
+												th:href="@{'/user/other_profile/'+${p.user.user_id}}"></a>
+											<a th:if="${user.user_id == p.user.user_id}" class="stretched-link"
+												th:href="@{/user/profile}"></a>
+											<span th:text="${p.user.first_name+' '+p.user.last_name}"></span>
+										</h5>
+										<small class="text-secondary" th:text="${p.date_str}"></small>
+									</div>
+									<!--buttons for edit delete post-->
+									<div class="col-md-2" th:if="${user == p.user}">
+										<div class="dropdown">
+											<button class="btn dropdown-toggle" type="button" id="dropdownMenu2"
+												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<i class="fa-solid fa-pen"></i>
+											</button>
+											<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+												<form method="post" th:action="@{'/user/updatePost/'+${p.post_id}}">
+													<button type="submit" class="dropdown-item"><i
+															class="fa-solid fa-pen-to-square"></i>
+														Edit
+													</button>
+												</form>
+												<a href="#" th:onclick="|deletePost(${p.post_id})|"
+													class="dropdown-item" type="button"><i
+														class="fa-solid fa-trash"></i> Delete</a>
+											</div>
+										</div>
+									</div>
+									<!--button for reporting particular post-->
+									<div class="col-md-2" th:if="${user != p.user}">
+										<div class="dropdown">
+											<button class="btn dropdown-toggle" type="button" id="dropdownMenu2"
+												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<i class="fa-solid fa-circle-exclamation"></i>
+											</button>
+											<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+												<button class="dropdown-item" type="button" data-toggle="modal"
+													data-target="#report-post-modal"
+													th:onclick="reportPost([[${p.post_id}]])"><i
+														class="fa-solid fa-triangle-exclamation"></i> Report</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--main post content is shown in this area-->
+							<a th:href="@{'/user/postpage/'+${p.post_id}}">
+								<div class="card-body">
+									<div class="container">
+										<th:block>
+											<div class="row">
+												<h4 class="col-md-4 mb-3"
+													style="color: darkgreen; text-decoration: underline;">Post Title :
+												</h4>
+												<h4 class="col-md-8 mb-3" th:text="${p.post_title}"></h4>
+											</div>
+										</th:block>
+										<br>
+										<th:block th:utext="${p.post_content}"></th:block>
+										<th:block th:if="${p.post_image_name != null}">
+											<hr>
+											<div class="row justify-content-md-center post-image">
+												<img th:src="@{'/img/postMedia/'+${p.post_image_name}}" />
+											</div>
+										</th:block>
+										<th:block th:if="${p.post_video_name != null}">
+											<hr>
+											<div class="row justify-content-center post-video">
+												<video controls>
+													<source th:src="@{'/img/postMedia/'+${p.post_video_name}}" />
+												</video>
+											</div>
+										</th:block>
+									</div>
+								</div>
+							</a>
+							<div class="card-footer header-bg" th:id="'post-like-footer'+${p.post_id}" hidden>
+								<small>Liked By </small><small th:id="'userLike1'+${p.post_id}"></small><small
+									th:id="'userLike2'+${p.post_id}"></small><small th:id="'userLike3'+${p.post_id}">
+									and
+									Others...</small>
+							</div>
+							<div class="card-footer header-bg">
+								<div class="row">
+									<div class="col-md-1">
+										<i class="like fa-regular fa-heart fa-xl" th:id="'like'+${p.post_id}"
+											th:onclick="like([[${p.post_id}]],[[${likeOnPost[i.index].size()}]])"></i>
+										<i class="unlike fa-solid fa-heart fa-xl" th:id="'unlike'+${p.post_id}"
+											th:onclick="unlike([[${p.post_id}]],[[${likeOnPost[i.index].size()}]])"
+											hidden></i>
+									</div>
+									<div class="col-md-1">
+										<a th:href="@{'/user/postpage/'+${p.post_id}}"><i
+												class="comment fa-regular fa-comment fa-xl"></i></a>
+									</div>
+									<div class="col-md text-center">
+										<small class="form-text text-muted"><span
+												th:text="${likeOnPost[i.index].size()}"
+												th:id="'like-number'+${p.post_id}"></span>
+											Like(s)</small>
+									</div>
+									<div class="col-md text-center">
+										<small class="form-text text-muted"><span
+												th:text="${commentsOnPosts[i.index].size()}"></span> Comment(s)</small>
+									</div>
+									<div class="col-md-1 mr-1">
+										<i class="save fa-regular fa-bookmark fa-xl" th:id="'save'+${p.post_id}"
+											th:onclick="save([[${p.post_id}]])"></i>
+										<i class="unsave fa-solid fa-bookmark fa-xl" th:id="'unsave'+${p.post_id}"
+											th:onclick="unsave([[${p.post_id}]])" hidden></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--if no posts are present-->
+				<div th:if="${posts.isEmpty()}">
+					<div class="row justify-content-md-center m-5 p-5">
+						<img th:src="@{/img/ghost.gif}" height="100px" width="100px" class="rounded-circle" />
+					</div>
+					<div class="row justify-content-center">
+						<h1>Nothing to see here</h1>
+					</div>
+					<div class="row justify-content-md-center m-3" th:if="${uname==user.username}">
+						<a href="#" th:href="@{/user/profile}" class="btn btn-warning btn-lg" tabindex="-1"
+							role="button"><i class="fa-solid fa-circle-left"></i> Go Back</a>
+					</div>
+				</div>
+				<!--pagination-->
+				<div class="row justify-content-center page-footer" th:if="${!posts.isEmpty()}">
+					<nav aria-label="Page navigation example">
+						<ul class="pagination">
+							<li th:if="${currentPage != 0}" class="page-item">
+								<a class="page-link" th:href="@{'/user/my_post/'+${currentPage-1}}" href="#"
+									aria-label="Previous">
+									<i class="fa-solid fa-backward" aria-hidden="true"></i>
+								</a>
+							</li>
+							<li th:classappend="${currentPage==i-1?'active-page-number':''}"
+								th:each="i : ${#numbers.sequence(1,totalPages)}" class="page-item"><a class="page-link"
+									th:href="@{'/user/my_post/'+${i-1}}" href="#"><span class="font-weight-bold"
+										th:text="${i}"></span></a></li>
+							<li th:if="${currentPage+1 != totalPages}" class="page-item">
+								<a class="page-link" th:href="@{'/user/my_post/'+${currentPage+1}}" href="#"
+									aria-label="Next">
+									<i class="fa-solid fa-forward" aria-hidden="true"></i>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+			var postId = /*[[${postId}]]*/ "0";
+			var likedPostId = /*[[${likedPostId}]]*/ "1";
+			var likeOnPost = /*[[${likeOnPost}]]*/ "2";
+			var user = /*[[${user}]]*/ "4";
+			var savedPostIds = /*[[${savedPostIds}]]*/ "5";
+			/*]]>*/
+			window.onload = () => {
+				//js to manage icons
+				for (i = 0; i < postId.length; i++) {
+					for (j = 0; j < likeOnPost[i].length; j++) {
+						if (likeOnPost[i][j].postId.post_id === postId[i] && likeOnPost[i].length > 2) {
+							$("#post-like-footer" + postId[i]).removeAttr("hidden");
+							$("#userLike1" + postId[i]).html(likeOnPost[i][0].userId.first_name + ", ");
+							$("#userLike2" + postId[i]).html(likeOnPost[i][1].userId.first_name);
+						} else if (likeOnPost[i][j].postId.post_id === postId[i] && likeOnPost[i].length === 1) {
+							$("#post-like-footer" + postId[i]).removeAttr("hidden");
+							$("#userLike1" + postId[i]).html(likeOnPost[i][0].userId.first_name);
+							$("#userLike3" + postId[i]).attr("hidden", "hidden");
+						} if (likeOnPost[i][j].postId.post_id === postId[i] && likeOnPost[i].length === 2) {
+							$("#post-like-footer" + postId[i]).removeAttr("hidden");
+							$("#userLike1" + postId[i]).html(likeOnPost[i][0].userId.first_name + " and ");
+							$("#userLike2" + postId[i]).html(likeOnPost[i][1].userId.first_name);
+							$("#userLike3" + postId[i]).attr("hidden", "hidden");
+						}
+					}
+				}
+
+				for (i = 0; i < postId.length; i++) {
+					for (j = 0; j < likedPostId.length; j++) {
+						if (postId[i] === likedPostId[j]) {
+							$("#like" + likedPostId[j]).attr("hidden", "hidden");
+							$("#unlike" + likedPostId[j]).removeAttr("hidden");
+						}
+					}
+				}
+
+				for (i = 0; i < postId.length; i++) {
+					for (j = 0; j < savedPostIds.length; j++) {
+						if (postId[i] === savedPostIds[j]) {
+							$("#save" + savedPostIds[j]).attr("hidden", "hidden");
+							$("#unsave" + savedPostIds[j]).removeAttr("hidden");
+						}
+					}
+				}
+			};
+		</script>
+	</section>
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="mt-5 pt-4">
+		<div class="container">
+			<!--this page gives help on how to navigate
+			 settings and some other funcrions-->
+			<div class="card card-bg">
+				<div class="card-header header-bg">
+					<h2><i class="fa-solid fa-circle-question"></i> HELP</h2>
+				</div>
+				<ul class="list-group settings">
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample"
+						aria-expanded="false" aria-controls="collapseExample">How To Add Details</li>
+					<div class="collapse" id="collapseExample">
+						<div class="container p-3">
+							<div class="form-card">
+								<h4>For adding your details follow these steps :</h4>
+								<h5>1:</h5>
+								<p> Go to profile page and click on show detials as shown below :</p>
+								<img th:src="@{/img/settings-help/add-details(1).png}" height="100px" width="350px" />
+								<br><br><br>
+								<h5>2:</h5>
+								<p> Now click on add detials as shown below :</p>
+								<img th:src="@{/img/settings-help/add-details(2).png}" height="100px" width="350px" />
+								<br><br><br>
+								<h5>3:</h5>
+								<p> You will get a form like this, where you can add your detials :</p>
+								<img th:src="@{/img/settings-help/add-details(3).png}" height="200px" width="300px" />
+							</div>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample2"
+						aria-expanded="false" aria-controls="collapseExample2">How To Edit Details</li>
+					<div class="collapse" id="collapseExample2">
+						<div class="container p-3">
+							<div class="form-card">
+								<h4>For editting your details follow these steps :</h4>
+								<h5>1:</h5>
+								<p> Go to profile page and click on show detials as shown below :</p>
+								<img th:src="@{/img/settings-help/add-details(1).png}" height="100px" width="350px" />
+								<br><br><br>
+								<h5>2:</h5>
+								<p> Now click on edit detials as shown below :</p>
+								<img th:src="@{/img/settings-help/edit-details(1).png}" height="150px" width="300px" />
+								<br><br><br>
+								<h5>3:</h5>
+								<p> You will get a form like this, where you can edit your detials :</p>
+								<img th:src="@{/img/settings-help/edit-details(2).png}" height="200px" width="300px" />
+							</div>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample5"
+						aria-expanded="false" aria-controls="collapseExample5">How To Edit Your Registration Details
+					</li>
+					<div class="collapse" id="collapseExample5">
+						<div class="container p-3">
+							<div class="form-card">
+								<h4>For changing your registration details follow these steps :</h4>
+								<h5>1:</h5>
+								<p> Go to profile page and click on 3 dashes on the top right corner as shown below :
+								</p>
+								<img th:src="@{/img/settings-help/edit-reg-details(1).png}" height="50px"
+									width="650px" />
+								<br><br><br>
+								<h5>2:</h5>
+								<p> Now in the sidebar click on settings -> general as shown below :</p>
+								<img th:src="@{/img/settings-help/edit-reg-details(2).png}" height="400px"
+									width="200px" />
+								<br><br><br>
+								<h5>3:</h5>
+								<p> You will go to general settings page, where you can edit your registration detials :
+								</p>
+								<img th:src="@{/img/settings-help/edit-reg-details(3).png}" height="200px"
+									width="650px" />
+							</div>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample1"
+						aria-expanded="false" aria-controls="collapseExample1">How To Change Your Password or Username
+					</li>
+					<div class="collapse" id="collapseExample1">
+						<div class="container p-3">
+							<div class="form-card">
+								<h4>For changing your password or username follow these steps :</h4>
+								<h5>1:</h5>
+								<p> Go to profile page and click on 3 dashes on the top right corner as shown below :
+								</p>
+								<img th:src="@{/img/settings-help/edit-reg-details(1).png}" height="50px"
+									width="650px" />
+								<br><br><br>
+								<h5>2:</h5>
+								<p> Now in the sidebar click on settings -> privacy as shown below :</p>
+								<img th:src="@{/img/settings-help/change-password(1).png}" height="400px"
+									width="200px" />
+								<br><br><br>
+								<h5>3:</h5>
+								<p> Now you will be redirected to privacy settings page where you can change your
+									username or password :</p>
+								<img th:src="@{/img/settings-help/change-password(2).png}" height="100px"
+									width="600px" />
+							</div>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample3"
+						aria-expanded="false" aria-controls="collapseExample3">How To Delete Your Account</li>
+					<div class="collapse" id="collapseExample3">
+						<div class="container p-3">
+							<div class="container p-3">
+								<div class="form-card">
+									<h4>For deleting your account permanemtly follow these steps :</h4>
+									<h5>1:</h5>
+									<p> Go to profile page and click on 3 dashes on the top right corner as shown below
+										:
+									</p>
+									<img th:src="@{/img/settings-help/edit-reg-details(1).png}" height="50px"
+										width="650px" />
+									<br><br><br>
+									<h5>2:</h5>
+									<p> Now in the sidebar click on settings -> privacy as shown below :</p>
+									<img th:src="@{/img/settings-help/change-password(1).png}" height="400px"
+										width="200px" />
+									<br><br><br>
+									<h5>3:</h5>
+									<p> Now you will be redirected to privacy settings page where you can delete your
+										account permanemtly :</p>
+									<img th:src="@{/img/settings-help/delete-account.jpg}" height="150px"
+										width="600px" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</ul>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

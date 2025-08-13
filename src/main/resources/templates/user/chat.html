@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="back mt-5">
+		<div class="container mt-5">
+			<div class="row mt-5">
+				<div class="col-md-4">
+					<div class="card p-2 mt-4 text-dark card-bg">
+						<div class="container">
+							<div class="search-container m-2 p-2">
+								<input onkeyup="chatSearch()" id="chat-search-input" class="form-control" type="search"
+									placeholder="Search user (*unique username)" aria-label="Search">
+							</div>
+						</div>
+						<div class="card follower-list card-bg" id="follower-list">
+							<div class="card follower-search-list card-bg mb-2 mt-2" id="follower-search-list">
+								<!-- dynamic data from js after search -->
+							</div>
+							<!-- list of followers -->
+							<ul class="list-group">
+								<h5>CHAT LIST</h5>
+								<th:block th:each="m : ${messages}">
+									<li class="c-link list-group-item list-group-item-success chat-list selected"
+										th:onclick="openChat([[${m.user_id}]],this); nRead([[${user.user_id}]],[[${m.user_id}]])">
+										<div class="row">
+											<div class="col-md-2">
+												<img th:src="@{'/img/profileImg/'+${m.profile_image_name}}"
+													height="40px" width="40px"
+													class="border border-secondary rounded-circle mt-2" />
+												<div class="text-muted online-dot"
+													th:id="'online-dot'+${m.user_id}" hidden></div>
+											</div>
+											<div class="col-md-8">
+												<strong th:text="${m.first_name}+' '+${m.last_name}">
+												</strong><br>
+												<small th:text="${m.username}"></small>
+											</div>
+											<div class="col-md-2 p-3">
+												<i class="fa-solid fa-circle text-danger" th:id="${m.username}"
+													hidden></i>
+											</div>
+										</div>
+									</li>
+								</th:block>
+								<hr>
+								<h5>FOLLOWING</h5>
+								<th:block th:each="f : ${followed}">
+									<li class="c-link list-group-item list-group-item-success chat-list selected"
+										th:onclick="openChat([[${f.user_id.user_id}]],this); nRead([[${user.user_id}]],[[${f.user_id.user_id}]])">
+										<div class="row">
+											<div class="col-md-2">
+												<img th:src="@{'/img/profileImg/'+${f.user_id.profile_image_name}}"
+													height="40px" width="40px"
+													class="border border-secondary rounded-circle mt-2" />
+												<div class="text-muted online-dot"
+													th:id="'online-dot'+${f.user_id.user_id}" hidden></div>
+											</div>
+											<div class="col-md-8">
+												<strong th:text="${f.user_id.first_name}+' '+${f.user_id.last_name}">
+												</strong><br>
+												<small th:text="${f.user_id.username}"></small>
+											</div>
+											<div class="col-md-2 p-3">
+												<i class="fa-solid fa-circle text-danger" th:id="${f.user_id.username}"
+													hidden></i>
+											</div>
+										</div>
+									</li>
+								</th:block>
+								<th:block th:if="${followed.isEmpty()}">
+									<div class="row justify-content-md-center m-5 p-5">
+										<img th:src="@{/img/ghost.gif}" height="100px" width="100px"
+											class="rounded-circle" />
+									</div>
+									<!-- no followers -->
+									<div class="row justify-content-center">
+										<h5>You are not folowing anyone</h5>
+									</div>
+								</th:block>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- default screen -->
+				<div class="col-md-8 loader">
+					<div class="card card-bg p-3 mt-4 justify-content-center align-items-center text-dark"
+						id="chat-home">
+						<img th:src="@{/img/Logo.png}" class="logo" height="250px" width="250px" /><br>
+						<h1 class="text-muted">CRESENDO</h1>
+					</div>
+				</div>
+				<div class="col-md-8" id="chat-container">
+					<!-- chatbox.html here through ajax -->
+				</div>
+			</div>
+	</section>
+</body>
+
+</html>

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="back mt-5">
+		<div class="container pt-4">
+			<div class="col-md-10 offset-md-1">
+				<div class="form-card border border-secondary mb-5">
+					<div class="container text-center">
+						<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert m-3"
+							role="alert">
+							<strong class="text-center" th:text="${session.alert.content}"></strong>
+							<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+					</div>
+					<div class="container text-center">
+						<h2 style="color: rgb(128, 255, 128);">Write what's on your mind</h2>
+					</div>
+					<hr>
+					<div class="container pr-5 pl-5 mt-3">
+						<!--form to add post-->
+						<form th:object="${contact}" enctype="multipart/form-data" method="post"
+							th:action="@{/user/process_post}">
+							<label class="sr-only" for="inlineFormInputGroupUsername2">Post Title</label>
+							<div class="input-group mb-3 mr-sm-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<i class="fa-solid fa-heading"></i>
+									</div>
+								</div>
+								<input name="post_title" type="text" class="form-control"
+									id="inlineFormInputGroupUsername2" placeholder="Post Title" required>
+							</div>
+							<label class="sr-only" for="inlineFormInputGroupUsername2">Post Content</label>
+							<div class="input-group mb-3 mr-sm-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<i class="fa-solid fa-rectangle-list"></i>
+									</div>
+								</div>
+								<textarea name="post_content" type="text" class="form-control"
+									id="inlineFormInputGroupUsername2" placeholder="Post Content"></textarea>
+							</div>
+							<!--image upload div-->
+							<div class="container imageUpload">
+								<button type="button" onclick="defaultBtnActive()" class="btn btn-secondary"
+									id="custom-btn"><i class='bx bx-image-add bx-sm'></i> Choose an
+									Image</button>
+								<input name="postImg" class="image postImg" id="default-btn" type="file"
+									onchange="readURL(this);" accept="image/*" hidden />
+								<div class="card wrapper card-bg m-3" hidden>
+									<div class="image">
+										<img class="uploadImg" src="" hidden />
+									</div>
+									<div class="content">
+										<div class="icon"></div>
+										<div class="text"></div>
+									</div>
+									<div id="cancel-btn">
+										<i class="fas fa-times"></i>
+									</div>
+									<div id="edit-btn">
+										<button type="button" class="edit-start btn btn-secondary" data-toggle="modal"
+											data-target="#staticBackdrop">
+											<i class="fa-solid fa-pencil"></i>
+										</button>
+									</div>
+									<div class="file-name text-center"></div>
+								</div>
+							</div>
+							<!--end image upload div-->
+							<!--video upload div-->
+							<div class="container videoUpload mt-2">
+								<button type="button" onclick="defaultVidBtnActive()" class="btn btn-secondary"
+									id="custom-vid-btn"><i class='bx bx-video-plus bx-sm'></i> Choose a
+									video</button>
+								<input type="file" name="postVid" class="file_multi_video" accept="video/*" hidden>
+								<div class="card wrapper2 card-bg m-3" hidden>
+									<div class="container text-center">
+										<video class="vid_preview" height="260" controls>
+											<source src="" id="video_here">
+										</video>
+									</div>
+									<div id="cancel-vid-btn">
+										<i class="fas fa-times"></i>
+									</div>
+									<div class="vid-file-name text-center"></div>
+								</div>
+							</div>
+							<!--end video upload div-->
+							<small class="form-text text-white-50">You can either choose an image or a video.</small>
+							<div class="container text-center mt-2">
+								<button type="submit" class="btn btn-success">
+									<i class="fa-solid fa-pen-to-square"></i> Post
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--Modal for editing image-->
+		<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+			aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header bg-custom">
+						<h5 class="modal-title" id="staticBackdropLabel">Edit Image</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body card-bg pb-4 pr-5 pr-5">
+						<div class="p-2">
+							<div class="container editImg">
+								<div class="wrapper1">
+									<div class="row">
+										<div class="col-md-4">
+											<div class="card p-3 editor-panel">
+												<div class="filter">
+													<h4 class="title">Filters</h4>
+													<!--several image editing options-->
+													<div class="options text-center p-2">
+														<div class="row">
+															<div class="col">
+																<button id="brightness"
+																	class="btn btn-info">Brightness</button>
+															</div>
+															<div class="col">
+																<button id="saturation"
+																	class="btn btn-info">Saturation</button>
+															</div>
+														</div>
+														<div class="row mt-2">
+															<div class="col">
+																<button id="inversion"
+																	class="btn btn-info">Inversion</button>
+															</div>
+															<div class="col">
+																<button id="grayscale"
+																	class="btn btn-info">Grayscale</button>
+															</div>
+														</div>
+													</div>
+													<div class="card p-2 slider" hidden>
+														<div class="filter-info">
+															<p class="name font-weight-bold"></p>
+															<div class="text-center">
+																<p class="value"></p>
+															</div>
+														</div>
+														<div class="form-group">
+															<input type="range" class="form-control-range"
+																id="formControlRange" value="100" min="0" max="200">
+														</div>
+													</div>
+												</div>
+												<div class="rotate mt-3">
+													<h4 class="title">Rotate and Flip</h4>
+													<div class="options text-center p-2">
+														<div class="row">
+															<div class="col">
+																<button id="left" class="btn btn-outline-info"><i
+																		class="fa-solid fa-rotate-left"></i></button>
+															</div>
+															<div class="col">
+																<button id="right" class="btn btn-outline-info"><i
+																		class="fa-solid fa-rotate-right"></i></button>
+															</div>
+															<div class="col">
+																<button id="horizontal" class="btn btn-outline-info"><i
+																		class='bx bx-reflect-vertical'></i></button>
+															</div>
+															<div class="col">
+																<button id="vertical" class="btn btn-outline-info"><i
+																		class='bx bx-reflect-horizontal'></i></button>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="row mt-2">
+													<div class="container text-center">
+														<button id="crop" class="btn btn-outline-info"><i
+																class='bx bxs-crop'></i></button>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-8">
+											<div class="card p-1 preview-img">
+												<!--image is placed here after seleting on for upload-->
+												<img src="" alt="preview-img" id="previewImage">
+												<div class="cropBtn container text-center mt-2" hidden>
+													<button id="do-crop" class="btn btn-secondary">Done</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row mt-3">
+									<div class="col-md-4">
+										<button class="reset-filter btn btn-secondary">
+											Reset Filters
+										</button>
+									</div>
+									<div class="col text-center">
+										<button class="save-img btn btn-success" data-dismiss="modal">
+											Save Changes
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end edit modal-->
+		<script>
+			//script for adding word like text editor
+			//for the main post content
+			tinymce.init({
+				selector: 'textarea',
+				height: 300,
+				width: 900,
+				plugins:
+					'advlist autolink lists link charmap preview ' +
+					'anchor searchreplace visualblocks code fullscreen ' +
+					'insertdatetime table help wordcount emoticons',
+				toolbar: 'undo redo | blocks fontfamily fontsize | ' +
+						 'bold italic underline  emoticons | ' +
+						 'forecolor backcolor | align lineheight |' +
+						 ' checklist numlist bullist indent outdent | ' + 
+						 'strikethrough charmap | removeformat',
+				tinycomments_mode: 'embedded',
+				tinycomments_author: 'Author name'
+			});
+
+			//fetching data
+			var wrapper = document.querySelector(".wrapper"),
+				fileName = document.querySelector(".file-name"),
+				defaultBtn = document.querySelector("#default-btn"),
+				postImg = document.querySelector(".postImg"),
+				customBtn = document.querySelector("#custom-btn"),
+				cancelBtn = document.querySelector("#cancel-btn i"),
+				img = document.querySelector(".uploadImg");
+			//initialize variables	
+			var cropper = null, imgsrcCopy = null, imgName = null;
+			
+			// make default upload button clicked when custom button is clicked
+			function defaultBtnActive() {
+				defaultBtn.click();
+			}
+
+			let regExp = /[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/;
+
+			//view the uploading image
+			defaultBtn.addEventListener("change", function () {
+				const file = this.files[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function () {
+						const result = reader.result;
+						img.src = result;
+						imgsrcCopy = result;
+						previewImg.src = URL.createObjectURL(file);
+						wrapper.classList.add("active1");
+						img.removeAttribute("hidden");
+						wrapper.removeAttribute("hidden");
+						customVidBtn.setAttribute("disabled", "disabled");
+					}
+					cancelBtn.addEventListener("click", function () {
+						img.src = "";
+						defaultBtn.value = "";
+						wrapper.classList.remove("active1");
+						img.setAttribute("hidden", "hidden");
+						wrapper.setAttribute("hidden", "hidden");
+						customVidBtn.removeAttribute("disabled");
+					})
+					reader.readAsDataURL(file);
+				}
+				if (this.value) {
+					let valueStore = this.value.match(regExp);
+					imgName = valueStore;
+					fileName.textContent = valueStore;
+				}
+			});
+
+			//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//video preview
+			const wrapper2 = document.querySelector(".wrapper2"),
+				defaultVidBtn = document.querySelector(".file_multi_video"),
+				customVidBtn = document.querySelector("#custom-vid-btn"),
+				vidFileName = document.querySelector(".vid-file-name"),
+				cancelVidBtn = document.querySelector("#cancel-vid-btn i");
+
+			function defaultVidBtnActive() {
+				defaultVidBtn.click();
+			}
+
+			$(document).on("change", ".file_multi_video", function (evt) {
+				var $source = $('#video_here');
+				$source[0].src = URL.createObjectURL(this.files[0]);
+				$source.parent()[0].load();
+				wrapper2.classList.add("active1");
+				wrapper2.removeAttribute("hidden");
+				customBtn.setAttribute("disabled", "disabled");
+				cancelVidBtn.addEventListener("click", function () {
+					$source.prop('src', '');
+					$source.parent()[0].load();
+					defaultVidBtn.value = "";
+					wrapper2.classList.remove("active1");
+					wrapper2.setAttribute("hidden", "hidden");
+					customBtn.removeAttribute("disabled");
+				})
+				if (this.value) {
+					let valueStore = this.value.match(regExp);
+					vidFileName.textContent = valueStore;
+				}
+			});
+			//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//editing image js
+			const editBtn = document.querySelector(".edit-start"),
+				previewImg = document.querySelector(".preview-img img"),
+				filterOptions = document.querySelectorAll(".filter button"),
+				filterName = document.querySelector(".filter-info .name"),
+				filterValue = document.querySelector(".filter-info .value"),
+				filterSlider = document.querySelector(".slider input"),
+				sliderCard = document.querySelector(".slider"),
+				rotateOptions = document.querySelectorAll(".rotate button"),
+				resetFilterBtn = document.querySelector(".reset-filter"),
+				saveImgBtn = document.querySelector(".save-img"),
+				cropBtn = document.querySelector("#crop"),
+				imgToCrop = document.querySelector("#previewImage"),
+				croppedImgArea = document.querySelector("#outputImage"),
+				doneBtn = document.querySelector("#do-crop"),
+				doneBtnArea = document.querySelector(".cropBtn");
+
+			let brightness = "100", saturation = "100", inversion = "0", grayscale = "0";
+			let rotate = 0, flipHorizontal = 1, flipVertical = 1;
+
+			//cropping js
+			cropBtn.addEventListener('click', function () {
+				doneBtnArea.removeAttribute("hidden");
+				cropper = new Cropper(imgToCrop, {
+					aspectRatio: 0
+				});
+			});
+
+			doneBtn.addEventListener('click', function () {
+				var croppedImage = cropper.getCroppedCanvas().toDataURL("image/png");
+				imgToCrop.src = croppedImage;
+				img.src = croppedImage;
+				doneBtnArea.setAttribute("hidden", "hidden");
+				cropper.destroy();
+			});
+			//end cropping js
+			//js to apply filters
+			const applyFilter = () => {
+				previewImg.style.transform = `rotate(${rotate}deg) scale(${flipHorizontal}, 
+											${flipVertical})`;
+				previewImg.style.filter = `brightness(${brightness}%) saturate(${saturation}%)
+											 invert(${inversion}%) grayscale(${grayscale}%)`;
+			}
+
+			filterOptions.forEach(option => {
+				option.addEventListener("click", () => {
+					document.querySelector(".active").classList.remove("active");
+					option.classList.add("active");
+					filterName.innerText = option.innerText;
+					sliderCard.removeAttribute("hidden");
+					console.log(option);
+
+					if (option.id === "brightness") {
+						filterSlider.max = "200";
+						filterSlider.value = brightness;
+						filterValue.innerText = `${brightness}%`;
+					} else if (option.id === "saturation") {
+						filterSlider.max = "200";
+						filterSlider.value = saturation;
+						filterValue.innerText = `${saturation}%`
+					} else if (option.id === "inversion") {
+						filterSlider.max = "100";
+						filterSlider.value = inversion;
+						filterValue.innerText = `${inversion}%`;
+					} else {
+						filterSlider.max = "100";
+						filterSlider.value = grayscale;
+						filterValue.innerText = `${grayscale}%`;
+					}
+				});
+			});
+
+			const updateFilter = () => {
+				filterValue.innerText = `${filterSlider.value}%`;
+				const selectedFilter = document.querySelector(".filter .active");
+
+				if (selectedFilter.id === "brightness") {
+					brightness = filterSlider.value;
+				} else if (selectedFilter.id === "saturation") {
+					saturation = filterSlider.value;
+				} else if (selectedFilter.id === "inversion") {
+					inversion = filterSlider.value;
+				} else {
+					grayscale = filterSlider.value;
+				}
+				applyFilter();
+			}
+
+			rotateOptions.forEach(option => {
+				option.addEventListener("click", () => {
+					if (option.id === "left") {
+						rotate -= 90;
+					} else if (option.id === "right") {
+						rotate += 90;
+					} else if (option.id === "horizontal") {
+						flipHorizontal = flipHorizontal === 1 ? -1 : 1;
+					} else {
+						flipVertical = flipVertical === 1 ? -1 : 1;
+					}
+					applyFilter();
+				});
+			});
+
+
+			const resetFilter = () => {
+				brightness = "100"; saturation = "100"; inversion = "0"; grayscale = "0";
+				rotate = 0; flipHorizontal = 1; flipVertical = 1;
+				sliderCard.setAttribute("hidden", "hidden");
+				img.src = imgsrcCopy;
+				imgToCrop.src = imgsrcCopy;
+				applyFilter();
+			}
+
+			const saveImage = () => {
+				const canvas = document.createElement("canvas");
+				const ctx = canvas.getContext("2d");
+				canvas.width = previewImg.naturalWidth;
+				canvas.height = previewImg.naturalHeight;
+
+				ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%)`;
+				ctx.translate(canvas.width / 2, canvas.height / 2);
+				if (rotate !== 0) {
+					ctx.rotate(rotate * Math.PI / 180);
+				}
+				ctx.scale(flipHorizontal, flipVertical);
+				ctx.drawImage(previewImg, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+
+				img.src = canvas.toDataURL();
+
+				canvas.toBlob((blob) => {
+					const file = new File([blob], imgName);
+					const dataTransfer = new DataTransfer();
+					dataTransfer.items.add(file);
+					postImg.files = dataTransfer.files;
+				});
+			}
+
+			filterSlider.addEventListener("input", updateFilter);
+			resetFilterBtn.addEventListener("click", resetFilter);
+			saveImgBtn.addEventListener("click", saveImage);
+			//end js to apply filters
+		</script>
+	</section>
+</body>
+
+</html>

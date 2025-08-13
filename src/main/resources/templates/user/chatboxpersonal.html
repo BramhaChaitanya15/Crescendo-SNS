@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="back">
+		<div class="container mt-5 p-2">
+			<div class="card card-bg mt-4 chat-container text-dark" th:id="${'chat-home'+receiver.user_id}">
+				<div class="card-header header-bg">
+					<div class="row">
+						<div class="col-md-10">
+							<!--showing user details-->
+							<a th:href="@{'/user/other_profile/'+${receiver.user_id}}">
+								<img th:src="@{'/img/profileImg/'+${receiver.profile_image_name}}" height="40px"
+									width="40px" class="border border-secondary rounded-circle mt-2" />
+								<strong class="ml-3" th:text="${receiver.first_name}+' '+${receiver.last_name}">
+								</strong><br>
+							</a>
+							<small class="ml-5 pl-3 text-muted" th:id="'online'+${receiver.user_id}"
+								hidden>online</small>
+						</div>
+						<div class="btn col-md-2 ml-auto pr-3 pt-2">
+							<div class="dropdown dropleft">
+								<!--buttons for reporting and deleting chat-->
+								<button type="button" class="btn" data-toggle="dropdown" aria-haspopup="true"
+									aria-expanded="false">
+									<i class="fa-solid fa-bars"></i>
+								</button>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<p class="dropdown-item" th:onclick="closeChat([[${receiver.user_id}]])">Close Chat
+									</p>
+									<p class="dropdown-item" th:onclick="deleteChat([[${receiver.user_id}]])">Delete
+										Chat
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--chat stored in the database-->
+				<div class="card-body message-container">
+					<div class="container">
+						<th:block th:each="m : ${message}">
+							<div class="row mt-3 justify-content-start"
+								th:if="${m.reciepientUserId==user && m.senderUserId==receiver}">
+								<div class="col-md-1">
+									<img th:src="@{'/img/profileImg/'+${receiver.profile_image_name}}" height="25px"
+										width="25px" class="border border-secondary rounded-circle mt-2" />
+								</div>
+								<div class="col-md-6">
+									<div speech-bubble pleft atop style="--bbColor:#cccccc">
+										<div class="row pl-3" th:text="${m.message}">Left Top</div>
+										<div class="row pr-2 justify-content-end">
+											<small class="text-muted" th:text="${m.timeStampStr}"></small>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row mt-3 justify-content-end"
+								th:if="${m.reciepientUserId==receiver && m.senderUserId==user}">
+								<div class="col-md-6">
+									<div speech-bubble pright atop style="--bbColor:#45c5e0">
+										<div class="row pl-3" th:text="${m.message}">Left Top</div>
+										<div class="row pr-2 justify-content-end">
+											<small class="text-muted" th:text="${m.timeStampStr}"></small>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-1">
+									<img th:src="@{'/img/profileImg/'+${user.profile_image_name}}" height="25px"
+										width="25px" class="border border-secondary rounded-circle mt-2" />
+								</div>
+							</div>
+						</th:block>
+						</th:block>
+						<!-- div for live messages -->
+						<div th:id="'message-container'+${receiver.user_id}"></div>
+					</div>
+				</div>
+				<!--area to write message-->
+				<div class="card-footer header-bg">
+					<div class="row">
+						<div class="col-md-10">
+							<textarea name="message" type="text" id="message" class="form-control mr-sm-2 flex-grow-1"
+								placeholder="Type a Message..." required></textarea>
+						</div>
+						<div class="col-md-2 pl-4">
+							<button class="btn btn-success send-message" th:onclick="sendMessage([[${receiver}]])">
+								<i class="fa-solid fa-paper-plane"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

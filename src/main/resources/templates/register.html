@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="base::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>home page</title>
+
+</head>
+
+<body>
+	<!--registration page body-->
+	<section class="back mt-5 pt-3">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<div class="form-card border border-secondary mt-3 mb-5">
+						<div class="text-center">
+							<img th:src="@{/img/sign_up.png}" height="35px" width="35px" />
+						</div>
+						<h4 class="text-center text-success">Signup here...</h3>
+							<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert"
+								role="alert">
+								<strong class="text-center" th:text="${session.alert.content}"></strong>
+								<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<br>
+							<!--form for creating account-->
+							<form class="form" novalidate th:action="@{/do_register}" method="post" th:object="${user}"
+							onsubmit="return validateReg()">
+							<div class="row">
+								<div class="form-group col">
+									<label class="font-weight-bold" for="first_name">First Name</label>
+									<input name="first_name" type="text"
+										th:classappend="${#fields.hasErrors('first_name')?'is-invalid':''}"
+										class="form-control" id="first_name" aria-describedby="emailHelp"
+										placeholder="Enter here..." th:value="${user.first_name}" required />
+									<div class="invalid-feedback" th:each="e : ${#fields.errors('first_name')}"
+										th:text="${e}">
+									</div>
+								</div>
+								<div class="form-group col">
+									<label class="font-weight-bold" for="middle_name">Middle Name</label>
+									<input name="middle_name" type="text"
+										th:classappend="${#fields.hasErrors('middle_name')?'is-invalid':''}"
+										class="form-control" id="middle_name" aria-describedby="emailHelp"
+										placeholder="Enter here..." th:value="${user.middle_name}" />
+									<div class="invalid-feedback" th:each="e : ${#fields.errors('middle_name')}"
+										th:text="${e}">
+									</div>
+								</div>
+								<div class="form-group col">
+									<label class="font-weight-bold" for="last_name">Last Name</label>
+									<input name="last_name" type="text"
+										th:classappend="${#fields.hasErrors('last_name')?'is-invalid':''}"
+										class="form-control" id="last_name" aria-describedby="emailHelp"
+										placeholder="Enter here..." th:value="${user.last_name}" required />
+									<div class="invalid-feedback" th:each="e : ${#fields.errors('last_name')}"
+										th:text="${e}">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="font-weight-bold" for="user_email">Email address</label>
+								<input name="user_email" type="email"
+									th:classappend="${#fields.hasErrors('user_email')?'is-invalid':''}"
+									class="form-control" id="user_email" aria-describedby="emailHelp"
+									placeholder="Enter here..." th:value="${user.user_email}" required>
+								<div class="invalid-feedback" th:each="e : ${#fields.errors('user_email')}"
+									th:text="${e}">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="font-weight-bold" for="username">Username</label>
+								<input name="username" type="text"
+									th:classappend="${#fields.hasErrors('username')?'is-invalid':''}"
+									class="form-control" id="username" aria-describedby="emailHelp"
+									placeholder="Enter here..." th:value="${user.username}" required />
+								<div class="invalid-feedback" th:each="e : ${#fields.errors('username')}"
+									th:text="${e}">
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col">
+									<label class="font-weight-bold" for="password">Password</label>
+									<input name="password" type="password"
+										th:classappend="${#fields.hasErrors('password')?'is-invalid':''}"
+										class="form-control" id="password" placeholder="Enter here..." required />
+									<div class="invalid-feedback" th:each="e : ${#fields.errors('password')}"
+										th:text="${e}">
+									</div>
+									<div class="toggle-password text-dark">
+										<i class="fa-sharp fa-solid fa-eye"></i>
+										<i class="fa-sharp fa-solid fa-eye-slash"></i>
+									</div>
+								</div>
+								<div class="form-group col">
+									<label class="font-weight-bold" for="password2">Confirm Password</label>
+									<input type="password" class="form-control" id="password2"
+										placeholder="Enter here..." required />
+									<div id="validationServer03Feedback" class="invalid-feedback">
+										Password does not match
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="font-weight-bold" for="user_phone">Mobile Number</label>
+								<input name="user_phone" type="text"
+									th:classappend="${#fields.hasErrors('user_phone')?'is-invalid':''}"
+									class="form-control" id="last_name" aria-describedby="emailHelp"
+									placeholder="Enter here..." th:value="${user.user_phone}" required />
+								<div class="invalid-feedback" th:each="e : ${#fields.errors('user_phone')}"
+									th:text="${e}">
+								</div>
+							</div>
+							<div class="form-group form-check text-center">
+								<input name="agreement" type="checkbox" class="form-check-input" id="agreement" />
+								<label class="form-check-label" for="agreement">Accept terms and conditions</label>
+								<div class="container-fluid">
+									<a th:href="@{/TermsandConditions}" class="badge badge-info mb-3">click here to
+										check terms and conditons</a>
+								</div>
+							</div>
+							<div class="container mt-2 mb-2 text-center">
+								<button type="submit" class="btn btn-success ">
+									<i class="fa-solid fa-user-plus fa-beat"></i> Register
+								</button>
+								<button type="reset" class="btn btn-warning ">
+									<i class="fa-solid fa-rotate-right fa-spin"></i> Reset
+								</button>
+							</div>
+							<!--redirect to login page-->
+							<div class="container-fluid">
+								<a th:href="@{/user_login}" class="badge badge-primary mb-3">already have an account
+									click
+									here</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			//function to get element by id
+			function _id(name) {
+				return document.getElementById(name);
+			}
+			//function to get element by class
+			function _class(name) {
+				return document.getElementsByClassName(name);
+			}
+
+			//event handling for toggling password
+			_class("toggle-password")[0].addEventListener("click", function () {
+				_class("toggle-password")[0].classList.toggle("active");
+				if (_id("password").getAttribute("type") === "password") {
+					_id("password").setAttribute("type", "text");
+				} else {
+					_id("password").setAttribute("type", "password");
+				}
+			});
+		</script>
+	</section>
+</body>
+
+</html>

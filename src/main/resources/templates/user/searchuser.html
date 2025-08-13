@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section clsss="back mt-5 p-4">
+		<div class="container mt-5 p-4">
+			<div class="card card-bg">
+				<div class="search-container m-4 p-3">
+					<input onkeyup="search()" id="search-input" class="form-control" type="search"
+						placeholder="Search user (*unique username shown below your name)"
+						aria-label="Search">
+					<div class="search-result" id="search-result">
+						<!--dynamic data-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

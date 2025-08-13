@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="mt-5 pt-4">
+		<div class="container">
+			<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert m-3" role="alert">
+				<strong class="text-center" th:text="${session.alert.content}"></strong>
+				<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="card card-bg">
+				<div class="card-header header-bg">
+					<h2><i class="fa-solid fa-shield-halved"></i> PRIVACY SETTINGS</h2>
+				</div>
+				<ul class="list-group settings">
+					<!--change username-->
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample1"
+						aria-expanded="false" aria-controls="collapseExample1">
+						<h6>Change Username</h6>
+					</li>
+					<div class="collapse" id="collapseExample1">
+						<div class="container p-3">
+							<form class="form-username" th:action="@{/setting/change_username}" method="post">
+								<div class="form-group">
+									<input name="newUsername" type="text" class="form-control" id="newUsername"
+										th:placeholder="${user.username}" required>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-success" type="submit" id="submitUsername">Submit</button>
+									<button class="btn btn-warning" type="reset">Reset</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<!--change password-->
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample"
+						aria-expanded="false" aria-controls="collapseExample">
+						<h6>Change Password</h6>
+					</li>
+					<div class="collapse" id="collapseExample">
+						<div class="container p-3">
+							<form class="form-password" th:action="@{/setting/change_password}" method="post">
+								<div class="form-group">
+									<input name="oldPassword" type="password" class="form-control" id="oldPassword"
+										placeholder="Enter Old Password..." required>
+								</div>
+								<div class="form-group">
+									<input name="newPassword" type="password" class="form-control" id="newPassword"
+										placeholder="Enter New Password..." required>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" id="toggle-password">
+									<label for="toggle-password">Show Password</label>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-success" type="submit" id="submitPassword">Submit</button>
+									<button class="btn btn-warning" type="reset">Reset</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample2"
+						aria-expanded="false" aria-controls="collapseExample2">
+						<h6>Delete Your Account</h6>
+					</li>
+					<div class="collapse" id="collapseExample2">
+						<div class="container p-3">
+							<!-- delete account part -->
+							<h5>Delete Your Accout Permanently: </h5>
+							<button class="btn btn-danger" id="delete-account-btn">Delete account</button>
+						</div>
+					</div>
+				</ul>
+			</div>
+		</div>
+		<script>
+			//function to get element by id
+			function _id(name) {
+				return document.getElementById(name);
+			}
+			//function to get element by class
+			function _class(name) {
+				return document.getElementsByClassName(name);
+			}
+
+			//event handling for toggling password
+			_id("toggle-password").addEventListener("click", function () {
+				if (_id("oldPassword").getAttribute("type") === "password" && _id("newPassword").getAttribute("type") === "password") {
+					_id("oldPassword").setAttribute("type", "text");
+					_id("newPassword").setAttribute("type", "text");
+				} else {
+					_id("newPassword").setAttribute("type", "password");
+					_id("oldPassword").setAttribute("type", "password");
+				}
+			});
+
+			$("#submitPassword").on("click", function (e) {
+				e.preventDefault();
+				var form = $(".form-password");
+				Swal.fire({
+					title: 'Are you sure, you want to change your Password?',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Change it!'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+			$("#submitUsername").on("click", function (e) {
+				e.preventDefault();
+				var form = $(".form-username");
+				Swal.fire({
+					title: 'Are you sure, you want to change your Username?',
+					text: 'You will be logged out!!',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Change it!'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+			$("#delete-account-btn").on("click", function(e){
+				Swal.fire({
+					title: 'Are you sure, you want to Delete your Account?',
+					text: 'You will not be able to revert it, and lose access to all your account data!!',
+					icon: 'error',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Delete it!'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						window.location = "/setting/delete-account";
+					}
+				});
+			});
+		</script>
+	</section>
+</body>
+
+</html>

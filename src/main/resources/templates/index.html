@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="base::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>home page</title>
+
+</head>
+
+<body>
+	<!--home page body-->
+	<section class="back d-flex justify-content-center align-items-center mt-5 pt-3">
+		<div class="text-center">
+			<img th:src="@{/img/Logo.png}" height="60px" width="60px" />
+			<h1 class="font-weight-bold">Crescendo</h1>
+			<p>Start Exploring by joining Crescendo.<br>
+				We provide a user friendly way to share your feelings with the world.</p>
+			<br>
+			<!-- redirect to login page -->
+			<div class="text-center">
+				<a th:href="@{/user_login}" class="badge badge-primary"> Login to your account </a>
+			</div>
+			<br>
+			<!-- redirect to registration page -->
+			<div class="text-center">
+				<small class="text-muted">If you don't have an account click below</small>
+				<br>
+				<a th:href="@{/new_user}" class="badge badge-success"> Create a new account </a>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>
