@@ -1,3 +1,5 @@
+//localhost can be changed to server IP for chat and notifications
+
 //function to get element by id
 function _id(name) {
 	return document.getElementById(name);
@@ -58,8 +60,8 @@ const search = () => {
 	} else {
 		console.log(query);
 
-		//sending request to server
-		let url = "http://192.168.1.13:8181/search/" + query;
+		//sending request to server localhost can be changed to server IP for chat and notifications
+		let url = "http://localhost:8181/search/" + query;
 
 		fetch(url).then((Response) => {
 			return Response.json();
@@ -95,7 +97,7 @@ const search = () => {
 var stompClient = null;
 // function for establishing web socket subscription
 function connect() {
-	let socket = new SockJS("http://192.168.1.13:8181/websocket");
+	let socket = new SockJS("http://localhost:8181/websocket");
 	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
 
@@ -177,7 +179,7 @@ function sendNotification(notification) {
 }
 //function to mark notifications as read
 const nRead = (uid, suid) => {
-	let url = "http://192.168.1.13:8181/read/" + uid + "/" + suid;
+	let url = "http://localhost:8181/read/" + uid + "/" + suid;
 	fetch(url).then(response => {
 		// Check if the response status is OK (200)
 		if (!response.ok) {
@@ -225,7 +227,7 @@ const like = (pid, likeCount) => {
 	let plike = $("#plike" + pid);
 	let punlike = $("#punlike" + pid);
 
-	let url = "http://192.168.1.13:8181/like/" + pid;
+	let url = "http://localhost:8181/like/" + pid;
 	fetch(url).then(response => {
 		// Check if the response status is OK (200)
 		if (!response.ok) {
@@ -254,7 +256,7 @@ const unlike = (pid, likeCount) => {
 	let punlike = $("#punlike" + pid);
 	let likeno = $("#like-number" + pid);
 
-	let url = "http://192.168.1.13:8181/unlike/" + pid;
+	let url = "http://localhost:8181/unlike/" + pid;
 	fetch(url).then(Response => Response.text()).then((data) => {
 		if (data == "unliked") {
 			likeno.html(likeCount - 1);
@@ -273,7 +275,7 @@ const save = (pid) => {
 	let psave = $("#psave" + pid);
 	let punsave = $("#punsave" + pid);
 
-	let url = "http://192.168.1.13:8181/save/" + pid;
+	let url = "http://localhost:8181/save/" + pid;
 	fetch(url).then(Response => Response.text()).then((data) => {
 		if (data == "saved") {
 			save?.attr("hidden", "hidden")
@@ -292,7 +294,7 @@ const unsave = (pid) => {
 	let psave = $("#psave" + pid);
 	let punsave = $("#punsave" + pid);
 
-	let url = "http://192.168.1.13:8181/unsave/" + pid;
+	let url = "http://localhost:8181/unsave/" + pid;
 	fetch(url).then(Response => Response.text()).then((data) => {
 		if (data == "unsaved") {
 			unsave?.attr("hidden", "hidden")
@@ -309,7 +311,7 @@ const follow = (uid) => {
 	let follow = $("#follow");
 	let unfollow = $("#unfollow");
 
-	let url = "http://192.168.1.13:8181/follow/" + uid;
+	let url = "http://localhost:8181/follow/" + uid;
 	fetch(url).then(response => {
 		// Check if the response status is OK (200)
 		if (!response.ok) {
@@ -333,7 +335,7 @@ const unfollow = (uid) => {
 	let follow = $("#follow");
 	let unfollow = $("#unfollow");
 
-	let url = "http://192.168.1.13:8181/unfollow/" + uid;
+	let url = "http://localhost:8181/unfollow/" + uid;
 	fetch(url).then(response => {
 		// Check if the response status is OK (200)
 		if (!response.ok) {
@@ -356,7 +358,7 @@ const comment = (pid) => {
 	var cmt = _id("comment").value;
 	_class("emojionearea-editor")[0].childNodes[0].data = "";
 	_class("emojionearea-editor")[0].innerHTML = "";
-	let url = "http://192.168.1.13:8181/comment/" + pid + "/" + cmt;
+	let url = "http://localhost:8181/comment/" + pid + "/" + cmt;
 	if (cmt === "") {
 		_id("cmt-req").innerHTML = "Please write a comment";
 	} else if (cmt.length > 250) {
@@ -426,7 +428,7 @@ function showComment(cmt) {
 //show replies dynamically
 const commentReply = (pid, cmtid) => {
 	var reply = _id("reply" + cmtid).value;
-	let url = "http://192.168.1.13:8181/comment-reply/" + pid + "/" + cmtid + "/" + reply;
+	let url = "http://localhost:8181/comment-reply/" + pid + "/" + cmtid + "/" + reply;
 	if (reply === "") {
 		_id("reply-req").innerHTML = "Please write a reply";
 	} else if (reply.length > 250) {
@@ -479,7 +481,7 @@ function chatSearch() {
 	} else {
 
 		//sending request to server
-		let url = "http://192.168.1.13:8181/search/" + query;
+		let url = "http://localhost:8181/search/" + query;
 
 		fetch(url).then((Response) => {
 			return Response.json();
@@ -522,7 +524,7 @@ function openChat(id, temp) {
 	//for chatbox  change
 	$(".c-link").removeClass("selected");
 	$.ajax({
-		url: "http://192.168.1.13:8181/user/chat-box/" + id,
+		url: "http://localhost:8181/user/chat-box/" + id,
 		success: function(data, textStatus, jqXHR) {
 			$(".loader").hide();
 			$("#chat-container").html(data);
@@ -741,7 +743,7 @@ function submitReport() {
 	var reportSubType = $("#subType").val();
 	var reportOptional = ($("#feedback").val()) ? $("#feedback").val() : "empty";
 
-	const url = "http://192.168.1.13:8181/submit-report/"
+	const url = "http://localhost:8181/submit-report/"
 		+ pid + "/" + reportType + "/" + reportSubType
 		+ "/" + reportOptional;
 
@@ -767,4 +769,5 @@ function showToast(content) {
 	setTimeout(() => {
 		$("#toast").removeClass("display");
 	}, 2000);
+
 }
