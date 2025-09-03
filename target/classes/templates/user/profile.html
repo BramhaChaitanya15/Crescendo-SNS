@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section clsss="back mt-5">
+		<div class="container mt-5">
+			<!--home card showing the user details on top
+			of the profile page just below the navbar-->
+			<div class="card border border-success mt-5">
+				<div class="card-header mt-2 header-bg text-dark text-center">
+					<div class="profile-img container-fluid text-center">
+						<img th:src="@{'/img/profileImg/'+${user.profile_image_name}}" height="150px" width="150px"
+							class="rounded-circle border border-success" />
+						<div data-toggle="modal" data-target="#add-image"
+							th:if="${user.profile_image_name != 'default.png'}"
+							class="profile-img-edit-btn text-center">
+							<i class="fa-solid fa-pencil"></i>
+						</div>
+						<div data-toggle="modal" data-target="#add-image"
+							th:if="${user.profile_image_name == 'default.png'}"
+							class="profile-img-edit-btn text-center">
+							<i class="fa-solid fa-plus"></i>
+						</div>
+					</div>
+					<br>
+					<h1 class="text-center">
+						<span th:text="${user.first_name+' '+user.last_name}"></span>
+					</h1>
+					<small class="text-center" th:text="${'Username : '+user.username}"></small>
+					<div class="container m-2 p-2">
+						<div class="row mt-4">
+							<div class="col-md">
+								<h5>Posts</h5>
+								<span th:text="${#lists.size(posts)}"></span>
+							</div>
+							<div class="col-md">
+								<h5>Followers</h5>
+								<span th:text="${#lists.size(followers)}"></span>
+							</div>
+							<div class="col-md">
+								<h5>Following</h5>
+								<span th:text="${#lists.size(following)}"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--area that shows the user details-->
+				<button class="btn btn-success" data-toggle="collapse" data-target="#details-card" aria-expanded="false"
+					aria-controls="details-card"><i class="fa-solid fa-circle-down fa-bounce"></i> Show Details <i
+						class="fa-solid fa-circle-up fa-bounce"></i></button>
+				<div class="collapse card-body card-bg" id="details-card">
+					<div class="container mt-4">
+						<h4 th:if="${details == ''}">
+							<button type="button" class="btn badge badge-success" data-toggle="modal"
+								data-target="#exampleModal"><i class="fa-solid fa-circle-plus"></i> Add your
+								details</button>
+						</h4>
+						<div class="card header-bg p-3" th:if="${details != null}">
+							<div th:if="${details.about != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>BIO :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.about}"></p>
+								</div>
+							</div>
+							<div th:if="${details.religion != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>Religion :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.religion}"></p>
+								</div>
+							</div>
+							<div th:if="${details.education1 != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>School :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.education1}"></p>
+								</div>
+							</div>
+							<div th:if="${details.education2 != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>College :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.education2}"></p>
+								</div>
+							</div>
+							<div th:if="${details.education3 != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>Other Education :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.education3}"></p>
+								</div>
+							</div>
+							<div th:if="${details.work != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>Work :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.work}"></p>
+								</div>
+							</div>
+							<div th:if="${details.user_address != ''}" class="row justify-content-md-center">
+								<div class="col-md-2">
+									<h6>Address :</h6>
+								</div>
+								<div class="col-md-6">
+									<p th:text="${details.user_address}"></p>
+								</div>
+							</div>
+							<div class="row justify-content-md-center">
+								<h4 th:if="${details != null}">
+									<button type="button" class="btn badge badge-success" data-toggle="modal"
+										data-target="#exampleModal1"><i class="fa-solid fa-circle-plus"></i> Edit your
+										details</button>
+									<button type="button" id="remove-details" class="btn badge badge-danger"><i
+											class="fa-solid fa-circle-xmark"></i> Remove your
+										details</button>
+								</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container mt-4">
+			<!--showing alert in the session-->
+			<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert m-3" role="alert">
+				<strong class="text-center" th:text="${session.alert.content}"></strong>
+				<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<!--cards that show several options-->
+			<div class="row m-3">
+				<div class="col-md">
+					<div class="card-body card-bg rounded text-center border border-success">
+						<img class="rounded-circle" th:src="@{/img/plus.gif}" height="80xp" width="80px" />
+						<br>
+						<a th:href="@{/user/add_post}" class="badge badge-pill badge-success stretched-link">
+							<h4>ADD POST</h4>
+						</a>
+					</div>
+				</div>
+				<div class="col-md">
+					<div class="card-body card-bg rounded text-center border border-success">
+						<img class="rounded-circle" th:src="@{/img/bookmark.gif}" height="80xp" width="80px" />
+						<br>
+						<a th:href="@{/user/saved_posts/0}" class="badge badge-pill badge-success stretched-link">
+							<h4>SAVED POSTS</h4>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="row m-3">
+				<div class="col-md">
+					<div class="card-body card-bg rounded text-center border border-success">
+						<img class="rounded-circle" th:src="@{/img/fans.gif}" height="80xp" width="80px" />
+						<br>
+						<a th:href="@{'/user/followers_page/'+${user.username}}"
+							class="badge badge-pill badge-success stretched-link">
+							<h4>FOLLOWERS</h4>
+						</a>
+					</div>
+				</div>
+				<div class="col-md">
+					<div class="card-body card-bg rounded text-center border border-success">
+						<img class="rounded-circle" th:src="@{/img/follow.gif}" height="80xp" width="80px" />
+						<br>
+						<a th:href="@{'/user/following_page/'+${user.username}}"
+							class="badge badge-pill badge-success stretched-link">
+							<h4>FOLLOWING</h4>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="row m-3">
+				<div class="col-md">
+					<div class="card-body card-bg rounded text-center border border-success">
+						<img class="rounded-circle" th:src="@{/img/posts.gif}" height="80xp" width="80px" />
+						<br>
+						<a th:href="@{'/user/posts/0/'+${user.username}}"
+							class="badge badge-pill badge-success stretched-link">
+							<h4>MY POSTS</h4>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- add details Modal -->
+		<div th:if="${details == null}" class="modal fade" id="exampleModal" tabindex="-1"
+			aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header header-bg">
+						<h5 class="modal-title text-dark" id="exampleModalLabel">Add details about you</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body card-bg">
+						<div class="form-card border border-secondary m-2">
+							<form th:action="@{/user/add_details}" method="post">
+								<label class="sr-only" for="about">About</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-address-card"></i></div>
+									</div>
+									<input name="about" type="text" class="form-control" id="about"
+										placeholder="About...">
+								</div>
+								<label class="sr-only" for="religion">Religion</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-star-and-crescent"></i>
+										</div>
+									</div>
+									<select name="religion" class="custom-select" id="religion">
+										<option selected disabled>Choose your religion...</option>
+										<option th:each="r : ${religions}" th:value="${r}" th:text="${r}"></option>
+									</select>
+								</div>
+								<label class="sr-only" for="education1">Education 1</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-school"></i></div>
+									</div>
+									<input name="education1" type="text" class="form-control" id="education1"
+										placeholder="School...">
+								</div>
+								<label class="sr-only" for="education2">Education 2</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-graduation-cap"></i></div>
+									</div>
+									<input name="education2" type="text" class="form-control" id="education2"
+										placeholder="College...">
+								</div>
+								<label class="sr-only" for="education3">Education 3</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-book-open-reader"></i></div>
+									</div>
+									<input name="education3" type="text" class="form-control" id="education3"
+										placeholder="others...">
+								</div>
+								<label class="sr-only" for="work">Work</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-briefcase"></i></div>
+									</div>
+									<input name="work" type="text" class="form-control" id="work" placeholder="Work...">
+								</div>
+								<label class="sr-only" for="address">Address</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-location-dot"></i></div>
+									</div>
+									<input name="user_address" type="text" class="form-control" id="address"
+										placeholder="Address...">
+								</div>
+								<div class="container text-center">
+									<button type="submit" class="btn btn-success"><i class="fa-solid fa-plus"></i>
+										Add</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end add details modal-->
+		<!-- edit details Modal -->
+		<div th:if="${details != null}" class="modal fade" id="exampleModal1" tabindex="-1"
+			aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header header-bg">
+						<h5 class="modal-title text-dark" id="exampleModalLabel">Edit your details</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body card-bg">
+						<div class="form-card border border-secondary m-2">
+							<form th:action="@{/user/edit_details}" method="post">
+								<input type="hidden" th:value="${details.id}" name="id" />
+								<label class="sr-only" for="about">About</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-address-card"></i></div>
+									</div>
+									<input th:value="${details.about}" name="about" type="text" class="form-control"
+										id="about" placeholder="About...">
+								</div>
+								<label class="sr-only" for="religion">Religion</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-star-and-crescent"></i>
+										</div>
+									</div>
+									<select name="religion" class="custom-select" id="religion">
+										<option value="" selected disabled>Choose your religion...</option>
+										<option th:each="r : ${religions}" th:value="${r}" th:text="${r}"
+											th:selected="${r == details.religion}"></option>
+									</select>
+								</div>
+								<label class="sr-only" for="education1">Education 1</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-school"></i></div>
+									</div>
+									<input th:value="${details.education1}" name="education1" type="text"
+										class="form-control" id="education1" placeholder="School...">
+								</div>
+								<label class="sr-only" for="education2">Education 2</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-graduation-cap"></i></div>
+									</div>
+									<input th:value="${details.education2}" name="education2" type="text"
+										class="form-control" id="education2" placeholder="College...">
+								</div>
+								<label class="sr-only" for="education3">Education 3</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-book-open-reader"></i></div>
+									</div>
+									<input th:value="${details.education3}" name="education3" type="text"
+										class="form-control" id="education3" placeholder="others...">
+								</div>
+								<label class="sr-only" for="work">Work</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-briefcase"></i></div>
+									</div>
+									<input th:value="${details.work}" name="work" type="text" class="form-control"
+										id="work" placeholder="Work...">
+								</div>
+								<label class="sr-only" for="address">Address</label>
+								<div class="input-group mb-2 mr-sm-2 mr-2">
+									<div class="input-group-prepend">
+										<div class="input-group-text"><i class="fa-solid fa-location-dot"></i></div>
+									</div>
+									<input th:value="${details.user_address}" name="user_address" type="text"
+										class="form-control" id="address" placeholder="Address...">
+								</div>
+								<div class="container text-center">
+									<button type="submit" class="btn btn-success"><i class="fa-solid fa-user-pen"></i>
+										Edit</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end edit details modal-->
+		<!-- add profile image Modal -->
+		<div class="modal fade" id="add-image" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header header-bg text-dark">
+						<h5 class="modal-title" id="exampleModalLabel">Add a profile image</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body card-bg">
+						<div class="container">
+							<form th:action="@{/user/change_profile_image}" method="post" enctype="multipart/form-data">
+								<div align="center">
+									<div class="container" id="display_image_div">
+										<img name="display_image_data" id="display_image_data"
+											th:src="@{'/img/profileImg/'+${user.profile_image_name}}" height="300px"
+											width="300px" class="rounded-circle border border-secondary" alt="Picture">
+									</div>
+									<button type="button" class="btn btn-outline-success mt-3" id="crop_button" hidden>
+										<i class="fa-solid fa-crop"></i> Crop
+									</button>
+									<div class="name-space file-name text-center" hidden></div>
+									<input onchange="readURL(this);" type="file" name="browse_image" id="browse_image"
+										class="form-control" accept="image/*" hidden>
+									<div class="container text-center">
+										<button type="button" th:if="${user.profile_image_name == 'default.png'}"
+											class="btn btn-outline-success mt-4" id="add-profile-img">
+											<i class='bx bxs-image-add'></i> Add image
+										</button>
+										<button type="button" th:if="${user.profile_image_name != 'default.png'}"
+											class="btn btn-outline-success mt-4" id="add-profile-img">
+											<i class="fa-regular fa-pen-to-square"></i> Change image
+										</button>
+										<button onclick="deleteProfileImg()" type="button" hidden
+											class="btn btn-outline-danger mt-4" id="delete-profile-img">
+											<i class="fa-solid fa-trash-can"></i> Delete image
+										</button>
+									</div>
+								</div>
+								<button type="submit" id="save-profile-img" class="btn btn-success mt-3" hidden><i
+										class="fa-solid fa-check"></i> Save
+									image</button>
+								<button type="reset" id="cancel-operation" data-dismiss="modal"
+									class="btn btn-danger mt-3" hidden><i class="fa-solid fa-xmark"></i> cancel
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end add image Modal -->
+		<script>
+			//alert to prompt the conformation
+			//of deletion of profile image
+			function deleteProfileImg() {
+				Swal.fire({
+					title: 'Are you sure, you want to delete your profile picture?',
+					text: "You won't be able to revert this!",
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						window.location = "/user/delete_profile_image";
+					}
+				})
+			}
+			$("#remove-details").on("click", function (e) {
+				Swal.fire({
+					title: 'Are you sure, you want to remove your details?',
+					text: 'You will not be able to revert it',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Delete it!'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						window.location = "/user/remove_details";
+					}
+				});
+			});
+			//js code for adding and altering profile image
+			//including cropping the images and preview
+			var browseImgBtn = document.querySelector("#browse_image"),
+				custombrowserImgBtn = document.querySelector("#add-profile-img"),
+				deleteBtn = document.querySelector("#delete-profile-img"),
+				saveBtn = document.querySelector("#save-profile-img"),
+				cancelBtn = document.querySelector("#cancel-operation"),
+				displayProPic = document.querySelector("#display_image_div"),
+				fileName = document.querySelector(".file-name");
+
+			var cropButton = document.getElementById('crop_button');
+
+			const profileImgName = "[['/img/profileImg/'+${user.profile_image_name}]]";
+
+			var deleteCondition = "[[${user.profile_image_name}]]";
+
+			let regExp = /[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/;
+
+			cancelBtn.addEventListener("click", function () {
+				displayProPic.innerHTML = ' <img name = "display_image_data" ' +
+					'id = "display_image_data" ' +
+					'src = "' + profileImgName + '" ' +
+					'alt = "Uploaded Picture" ' +
+					'class="rounded-circle border border-secondary" ' +
+					'height="300px" width="300px"> ';
+				if (deleteCondition != "default.png") {
+					deleteBtn.removeAttribute("hidden");
+				}
+				fileName.setAttribute("hidden", "hidden");
+				saveBtn.setAttribute("hidden", "hidden");
+				cancelBtn.setAttribute("hidden", "hidden");
+			});
+
+			custombrowserImgBtn.addEventListener("click", function () {
+				browseImgBtn.click();
+			});
+
+			browseImgBtn.addEventListener("change", function (e) {
+				var files = e.target.files;
+				var done = function (url) {
+					displayProPic.innerHTML = "";
+					displayProPic.innerHTML = ' <img name = "display_image_data" ' +
+						'id = "display_image_data" ' +
+						'src = "' + url + '" ' +
+						'alt = "Uploaded Picture" ' +
+						'class="rounded-circle border border-secondary" ' +
+						'height="300px" width="300px"> ';
+
+					cropButton.removeAttribute("hidden");
+					fileName.removeAttribute("hidden");
+					custombrowserImgBtn.setAttribute("hidden", "hidden");
+					deleteBtn.setAttribute("hidden", "hidden");
+				};
+				if (files && files.length > 0) {
+					file = files[0];
+					if (URL) {
+						done(URL.createObjectURL(file));
+					} else if (FileReader) {
+						reader = new FileReader();
+						reader.onload = function (e) {
+							done(reader.result);
+						};
+						reader.readAsDataURL(file);
+					}
+				}
+				if (this.value) {
+					let valueStore = this.value.match(regExp);
+					imgName = valueStore;
+					fileName.textContent = valueStore;
+				}
+
+				var image = document.getElementById('display_image_data');
+				var result = document.getElementById('cropped_image_result');
+				var croppable = false;
+
+				var cropper = new Cropper(image, {
+					aspectRatio: 1,
+					viewMode: 1,
+					ready: function () {
+						croppable = true;
+					},
+				});
+				cropButton.onclick = function () {
+					var croppedCanvas;
+					var roundedCanvas;
+					var roundedImage;
+					if (!croppable) {
+						return;
+					}
+					// Crop
+					croppedCanvas = cropper.getCroppedCanvas();
+					// Round
+					roundedCanvas = getRoundedCanvas(croppedCanvas);
+					// Show
+					roundedImage = document.getElementById("display_image_data");
+					roundedImage.src = roundedCanvas.toDataURL()
+
+					roundedCanvas.toBlob((blob) => {
+						const file = new File([blob], imgName);
+						const dataTransfer = new DataTransfer();
+						dataTransfer.items.add(file);
+						browseImgBtn.files = dataTransfer.files;
+					});
+
+					cropper.destroy();
+					cropButton.setAttribute("hidden", "hidden");
+					custombrowserImgBtn.removeAttribute("hidden");
+					saveBtn.removeAttribute("hidden");
+					cancelBtn.removeAttribute("hidden");
+				};
+			});
+
+			function getRoundedCanvas(sourceCanvas) {
+				var canvas = document.createElement('canvas');
+				var context = canvas.getContext('2d');
+				var width = sourceCanvas.width;
+				var height = sourceCanvas.height;
+				canvas.width = width;
+				canvas.height = height;
+				context.imageSmoothingEnabled = true;
+				context.drawImage(sourceCanvas, 0, 0, width, height);
+				context.globalCompositeOperation = 'destination-in';
+				context.beginPath();
+				context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+				context.fill();
+				return canvas;
+			}
+		</script>
+	</section>
+</body>
+
+</html>

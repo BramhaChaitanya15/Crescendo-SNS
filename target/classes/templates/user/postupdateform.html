@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section clsss="back mt-5">
+		<div class="container pt-5">
+			<div class="col-md-10 offset-md-1 mt-4">
+				<div class="form-card border border-secondary mb-5">
+					<div class="container text-center">
+						<!--alerts in session are showed here-->
+						<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert m-3"
+							role="alert">
+							<strong class="text-center" th:text="${session.alert.content}"></strong>
+							<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+					</div>
+					<div class="container text-center">
+						<h2 style="color: rgb(128, 255, 128);">Updated your post <span
+								th:text="${'('+post.post_title+')'}"></span></h2>
+					</div>
+					<hr>
+					<div class="container pr-5 pl-5 mt-3">
+						<!--main form to update any post-->
+						<!--data of post to be editted is already filled-->
+						<form th:object="${contact}" enctype="multipart/form-data" method="post"
+							th:action="@{/user/edit_post_process}">
+							<input name="post_id" type="hidden" th:value="${post.post_id}" />
+							<input name="old" id="old" type="hidden" value="0" />
+							<label class="sr-only" for="inlineFormInputGroupUsername2">Post Title</label>
+							<div class="input-group mb-3 mr-sm-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<i class="fa-solid fa-heading"></i>
+									</div>
+								</div>
+								<input th:value="${post.post_title}" name="post_title" type="text" class="form-control"
+									id="inlineFormInputGroupUsername2" placeholder="Post Title" required>
+							</div>
+							<label class="sr-only" for="inlineFormInputGroupUsername2">Post Content</label>
+							<div class="input-group mb-3 mr-sm-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<i class="fa-solid fa-rectangle-list"></i>
+									</div>
+								</div>
+								<textarea th:text="${post.post_content}" name="post_content" type="text"
+									class="form-control" id="inlineFormInputGroupUsername2"
+									placeholder="Post Content"></textarea>
+							</div>
+							<!--post image update if present section-->
+							<div class="imageUpload container" align="center" th:if="${post.post_image_name!=null}">
+								<div class="card wrapper card-bg">
+									<div class="image">
+										<img class="uploadImg" th:src="@{'/img/postMedia/'+${post.post_image_name}}" />
+									</div>
+								</div>
+								<div class="mt-3">
+									<button class="btn btn-secondary" id="cust-btn" type="button"><i
+											class='bx bx-image-add bx-sm'></i> Change Image</button>
+									<button class="btn btn-secondary" id="cust-add-btn" type="button" hidden><i
+											class='bx bx-image-add bx-sm'></i> Add
+										Image</button>
+									<button class="btn btn-danger" id="remove-btn" type="button"><i
+											class="fa-solid fa-trash-can"></i> Remove Image</button>
+									<input name="postImg" class="image postImg" id="default-btn" type="file"
+										onchange="readURL(this);" accept="image/*" hidden />
+								</div>
+								<div class="mt-3">
+									<div class="card wrapper wrapper2 card-bg mb-3" hidden>
+										<div class="container text-center">
+											<video class="vid_preview" height="260" src="" controls>
+											</video>
+										</div>
+									</div>
+									<button class="btn btn-secondary" id="cust-vid-btn" type="button" disabled><i
+											class='bx bx-video-plus bx-sm'></i> Add
+										Video</button>
+									<button class="btn btn-danger" id="cust-remove-vid-btn" type="button" hidden><i
+											class="fa-solid fa-trash-can"></i> Remove
+										Video</button>
+									<input name="postVid" class="image postImg" id="default-vid-btn" type="file"
+										onchange="readURL(this);" accept="video/*" hidden />
+								</div>
+								<small class="form-text text-white-50" id="text1">delete image first to add
+									video</small>
+							</div>
+							<!--edit post image update section-->
+							<!--post vidoe update if present section-->
+							<div class="imageUpload container" align="center" th:if="${post.post_video_name!=null}">
+								<div class="card wrapper card-bg">
+									<div class="container text-center">
+										<video class="uploadImg" height="260"
+											th:src="@{'/img/postMedia/'+${post.post_video_name}}" controls>
+										</video>
+									</div>
+								</div>
+								<div class="mt-3">
+									<button class="btn btn-secondary" id="cust-btn" type="button"><i
+											class='bx bx-video-plus bx-sm'></i> Change Video</button>
+									<button class="btn btn-secondary" id="cust-add-btn" type="button" hidden><i
+											class='bx bx-video-plus bx-sm'></i> Add
+										Video</button>
+									<button class="btn btn-danger" id="remove-btn" type="button"><i
+											class="fa-solid fa-trash-can"></i> Remove Video</button>
+									<input name="postVid" class="image postImg" id="default-btn" type="file"
+										onchange="readURL(this);" accept="video/*" hidden />
+								</div>
+								<div class="mt-3">
+									<div class="card wrapper wrapper2 card-bg mb-3" hidden>
+										<div class="image container text-center">
+											<img class="vid_preview" src="" />
+										</div>
+									</div>
+									<button class="btn btn-secondary" id="cust-vid-btn" type="button" disabled><i
+											class='bx bx-image-add bx-sm'></i> Add
+										Image</button>
+									<button class="btn btn-danger" id="cust-remove-vid-btn" type="button" hidden><i
+											class="fa-solid fa-trash-can"></i> Remove
+										Image</button>
+									<input name="postImg" class="image postImg" id="default-vid-btn" type="file"
+										onchange="readURL(this);" accept="image/*" hidden />
+								</div>
+								<small class="form-text text-white-50" id="text1">delete video first to add
+									image</small>
+							</div>
+							<!--end edit post video update section-->
+							<!--edit post without video or image section-->
+							<div class="imageUpload container" align="center"
+								th:if="${post.post_video_name==null && post.post_image_name==null}">
+								<div class="card wrapper card-bg" hidden>
+									<div class="image">
+										<img class="uploadImg" src="" />
+									</div>
+								</div>
+								<div class="mt-3">
+									<button class="btn btn-secondary" id="cust-btn" type="button" hidden>Change
+										Image</button>
+									<button class="btn btn-secondary" id="cust-add-btn" type="button"><i
+											class='bx bx-image-add bx-sm'></i> Add
+										Image</button>
+									<button class="btn btn-danger" id="remove-btn" type="button" hidden><i
+											class="fa-solid fa-trash-can"></i> Remove
+										Image</button>
+									<input name="postImg" class="image postImg" id="default-btn" type="file"
+										onchange="readURL(this);" accept="image/*" hidden />
+								</div>
+								<div class="mt-3">
+									<div class="card wrapper wrapper2 card-bg mb-3" hidden>
+										<div class="container text-center">
+											<video class="vid_preview" height="260" src="" controls>
+											</video>
+										</div>
+									</div>
+									<button class="btn btn-secondary" id="cust-vid-btn" type="button"><i
+											class='bx bx-video-plus bx-sm'></i> Add
+										Video</button>
+									<button class="btn btn-danger" id="cust-remove-vid-btn" type="button" hidden><i
+											class="fa-solid fa-trash-can"></i> Remove
+										Video</button>
+									<input name="postVid" class="image postImg" id="default-vid-btn" type="file"
+										onchange="readURL(this);" accept="video/*" hidden />
+								</div>
+								<small class="form-text text-white-50" id="text1" hidden>delete video first to add
+									image</small>
+							</div>
+							<!--end edit post without video or image section-->
+							<small class="form-text text-center text-white-50">You can either add an image or a video to
+								your post.</small>
+							<hr>
+							<div class="container text-center mt-3">
+								<button type="submit" class="btn btn-success">
+									<i class="fa-solid fa-pen-to-square"></i> Update
+								</button>
+								<a type="button" th:href="@{/user/feed/0}" class="btn btn-danger">
+									<i class="fa-solid fa-ban"></i> Cancel
+								</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			//add tinymce to the textarea
+			tinymce.init({
+				selector: 'textarea',
+				height: 300,
+				width: 900,
+				plugins:
+					'advlist autolink lists link charmap preview ' +
+					'anchor searchreplace visualblocks code fullscreen ' +
+					'insertdatetime table help wordcount',
+				toolbar: 'undo redo | blocks fontfamily fontsize ' +
+					'| bold italic underline strikethrough | ' +
+					'forecolor backcolor | align lineheight |' +
+					' checklist numlist bullist indent outdent ' +
+					'| emoticons charmap | removeformat',
+				tinycomments_mode: 'embedded',
+				tinycomments_author: 'Author name'
+			});
+
+
+			var changeImg = document.querySelector("#default-btn"),
+				customImgBtn = document.querySelector("#cust-btn"),
+				showImg = document.querySelector(".uploadImg"),
+				removeImg = document.querySelector("#remove-btn"),
+				wraper = document.querySelector(".wrapper"),
+				wraper2 = document.querySelector(".wrapper2"),
+				suggestionText = document.querySelector("#text1"),
+				customImgBtn1 = document.querySelector("#cust-add-btn"),
+				addVidBtn = document.querySelector("#default-vid-btn"),
+				showVid = document.querySelector(".vid_preview"),
+				cancelBtn = document.querySelector("#cust-remove-vid-btn"),
+				old = document.querySelector("#old");
+			vidAdd = document.querySelector("#cust-vid-btn");
+
+			//image post edit js
+			customImgBtn.addEventListener("click", function () {
+				changeImg.click();
+			});
+			customImgBtn1.addEventListener("click", function () {
+				changeImg.click();
+			});
+			vidAdd.addEventListener("click", function () {
+				addVidBtn.click();
+			});
+
+			changeImg.addEventListener("change", function () {
+				const file = this.files[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function () {
+						wraper.removeAttribute("hidden");
+						const result = reader.result;
+						showImg.src = result;
+						showImg.src = URL.createObjectURL(file);
+						vidAdd.setAttribute("disabled", "disabled");
+						removeImg.removeAttribute("hidden");
+					}
+					reader.readAsDataURL(file);
+				}
+			});
+			//remove image button js
+			removeImg.addEventListener("click", function () {
+				showImg.src = "";
+				changeImg.value = "";
+				old.value = 1;
+				wraper.setAttribute("hidden", "hidden");
+				removeImg.setAttribute("hidden", "hidden");
+				suggestionText.setAttribute("hidden", "hidden");
+				vidAdd.removeAttribute("disabled");
+				customImgBtn.setAttribute("hidden", "hidden");
+				customImgBtn1.removeAttribute("hidden");
+			});
+			//add video js
+			addVidBtn.addEventListener("change", function () {
+				const file = this.files[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function () {
+						wraper2.removeAttribute("hidden");
+						const result = reader.result;
+						showVid.src = result;
+						showVid.src = URL.createObjectURL(file);
+						customImgBtn1.setAttribute("disabled", "disabled");
+						cancelBtn.removeAttribute("hidden");
+					}
+					reader.readAsDataURL(file);
+				}
+			});
+			//cancel button js
+			cancelBtn.addEventListener("click", function () {
+				showVid.src = "";
+				addVidBtn.value = "";
+				wraper2.setAttribute("hidden", "hidden");
+				cancelBtn.setAttribute("hidden", "hidden");
+				customImgBtn1.removeAttribute("disabled");
+			});
+		</script>
+	</section>
+</body>
+
+</html>

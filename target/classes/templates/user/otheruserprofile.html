@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section clsss="back mt-5">
+		<div class="container mt-5 mb-3">
+			<!--card showing the uesr details-->
+			<div class="card border border-success mt-5">
+				<div class="card-header mt-2 header-bg text-dark text-center">
+					<div class="row p-2">
+						<div class="profile-img col-md-4 container-fluid">
+							<img th:src="@{'/img/profileImg/'+${searchedUser.profile_image_name}}" height="200px"
+								width="200px" class="rounded-circle border border-success" />
+						</div>
+						<div class="col-md-8">
+							<div class="row">
+								<div class="col-md align-self-end text-left">
+									<h1>
+										<span th:text="${searchedUser.first_name+' '+searchedUser.last_name}"></span>
+									</h1>
+									<small th:text="${'Username : '+searchedUser.username}"></small>
+								</div>
+								<!--buttons for interaction with the user-->
+								<div class="col-md mt-2 text-right">
+									<a class="btn btn-warning"
+										th:href="@{'/user/chat-box-personal/'+${searchedUser.user_id}}"><i
+											class="fa-solid fa-message"></i>
+										Message</a>
+									<button id="follow" class="btn btn-success"
+										th:onclick="follow([[${searchedUser.user_id}]])"><i
+											class="fa-solid fa-circle-plus"></i>
+										Follow</button>
+									<button id="unfollow" class="btn btn-danger"
+										th:onclick="unfollow([[${searchedUser.user_id}]])" hidden><i
+											class="fa-solid fa-circle-xmark"></i>
+										Unfollow</button>
+								</div>
+							</div>
+							<div class="row mt-4">
+								<!--showing other users followers and following-->
+								<div class="col-md">
+									<a th:href="@{'/user/posts/0/'+${searchedUser.username}}">
+										<h5>Posts</h5>
+										<span th:text="${#lists.size(serachedUserPosts)}"></span>
+									</a>
+								</div>
+								<div class="col-md">
+									<a th:href="@{'/user/followers_page/'+${searchedUser.username}}">
+										<h5>Followers</h5>
+										<span th:text="${#lists.size(followers)}"></span>
+									</a>
+								</div>
+								<div class="col-md">
+									<a th:href="@{'/user/following_page/'+${searchedUser.username}}">
+										<h5>Following</h5>
+										<span th:text="${#lists.size(following)}"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--area showing the details of the user-->
+		<div class="container">
+			<div class="card header-bg text-center" th:if="${details == null}">
+				<h2>No details added yet</h2>
+			</div>
+			<div class="card" th:if="${details != null}">
+				<div class="card-header header-bg text-center">
+					<h3>DETAILS</h3>
+				</div>
+				<div class="card-body card-bg">
+					<div class="card header-bg p-2">
+						<div th:if="${details.about != ''}" class="row justify-content-md-center">
+							<div class="col-md-2">
+								<h6>BIO :</h6>
+							</div>
+							<div class="col-md-6">
+								<p th:text="${details.about}"></p>
+							</div>
+						</div>
+						<div th:if="${details.religion != ''}" class="row justify-content-md-center">
+							<div class="col-md-2">
+								<h6>Religion :</h6>
+							</div>
+							<div class="col-md-6">
+								<p th:text="${details.religion}"></p>
+							</div>
+						</div>
+						<div th:if="${details.education1 != ''}" class="row justify-content-md-center">
+							<div class="col-md-2">
+								<h6>School :</h6>
+							</div>
+							<div class="col-md-6">
+								<p th:text="${details.education1}"></p>
+							</div>
+						</div>
+						<div th:if="${details.education2 != ''}" class="row justify-content-md-center">
+							<div class="col-md-2">
+								<h6>College :</h6>
+							</div>
+							<div class="col-md-6">
+								<p th:text="${details.education2}"></p>
+							</div>
+						</div>
+						<div th:if="${details.education3 != ''}" class="row justify-content-md-center">
+							<div class="col-md-2">
+								<h6>Other Education :</h6>
+							</div>
+							<div class="col-md-6">
+								<p th:text="${details.education3}"></p>
+							</div>
+						</div>
+						<div th:if="${details.work != ''}" class="row justify-content-md-center">
+							<div class="col-md-2">
+								<h6>Work :</h6>
+							</div>
+							<div class="col-md-6">
+								<p th:text="${details.work}"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-footer header-bg"></div>
+			</div>
+		</div>
+	</section>
+
+</body>
+
+</html>

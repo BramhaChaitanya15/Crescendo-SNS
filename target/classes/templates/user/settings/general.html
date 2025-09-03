@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="mt-5 pt-4">
+		<div class="container">
+			<div th:if="${session.alert}" th:classappend="${session.alert.type}" class="alert m-3" role="alert">
+				<strong class="text-center" th:text="${session.alert.content}"></strong>
+				<th:block th:text="${@sessionHelper.removeAlertFromSession()}"></th:block>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<!--setting to change name, email and phone number-->
+			<div class="card card-bg">
+				<div class="card-header header-bg">
+					<h2> <i class="fa-solid fa-sliders"></i> GENERAL SETTINGS</h2>
+				</div>
+				<ul class="list-group settings">
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample"
+						aria-expanded="false" aria-controls="collapseExample">
+						<h6>Change Or Edit Your Name</h6>
+					</li>
+					<div class="collapse" id="collapseExample">
+						<div class="container p-3">
+							<form th:action="@{/setting/change_name}" method="post">
+								<div class="form-group">
+									<label for="first_name">First Name</label>
+									<input name="first_name" type="text" class="form-control" id="first_name"
+										th:value="${user.first_name}" required>
+								</div>
+								<div class="form-group">
+									<label for="middle_name">Middle Name</label>
+									<input name="middle_name" type="text" class="form-control" id="middle_name"
+										th:value="${user.middle_name}">
+								</div>
+								<div class="form-group">
+									<label for="last_name">Last Name</label>
+									<input name="last_name" type="text" class="form-control" id="last_name"
+										th:value="${user.last_name}" required>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-success" type="submit" id="submitName">Submit</button>
+									<button class="btn btn-warning" type="reset">Reset</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample1"
+						aria-expanded="false" aria-controls="collapseExample1">
+						<h6>Change Your Email</h6>
+					</li>
+					<div class="collapse" id="collapseExample1">
+						<div class="container p-3">
+							<form th:action="@{/setting/change_email}" method="post">
+								<div class="form-group">
+									<label for="user_email">Email</label>
+									<input name="user_email" type="text" class="form-control" id="user_email"
+										th:value="${user.user_email}" required>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-success" type="submit" id="submitEmail">Submit</button>
+									<button class="btn btn-warning" type="reset">Reset</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<li class="list-group-item" data-toggle="collapse" data-target="#collapseExample3"
+						aria-expanded="false" aria-controls="collapseExample3">
+						<h6>Change Your Phone No.</h6>
+					</li>
+					<div class="collapse" id="collapseExample3">
+						<div class="container p-3">
+							<form th:action="@{/setting/change_number}" method="post">
+								<div class="form-group">
+									<label for="user_phone">Phone No.</label>
+									<input name="user_phone" type="text" class="form-control" id="user_phone"
+										th:value="${user.user_phone}" required>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-success" type="submit" id="submitPhone">Submit</button>
+									<button class="btn btn-warning" type="reset">Reset</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</ul>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

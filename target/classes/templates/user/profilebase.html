@@ -1,0 +1,542 @@
+<!-- base page with all the common css and js included -->
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:fragment="layout(content)">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+
+	<!--user defined css-->
+	<link rel="stylesheet" th:href="@{/css/style.css}" />
+
+	<!--fontawesome cdn-->
+	<script src="https://kit.fontawesome.com/10a439180c.js"></script>
+	<!--boxicon cdn-->
+	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+	<!--cropperjs cdn-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.css">
+	</link>
+
+	<!--tinymce cdn-->
+	<script src="https://cdn.tiny.cloud/1/bujxjie7b37txx8vomzflwde2ihs0apwja7p8i79bhqe2ad9/tinymce/7/tinymce.min.js"
+		referrerpolicy="origin"></script>
+
+	<!-- sockjs cdn -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+	<!-- emojiarea cdn -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css" />
+
+	<title th:text="${title}">base page</title>
+</head>
+
+<body class="profile-cover">
+	<div id="toggle" class="active">
+		<div class="wrap">
+			<!-- navbar -->
+			<div class="fixed-top">
+				<nav class="navbar navbar-expand-lg navbar-dark bg-custom">
+					<a class="navbar-brand" th:href="@{/user/feed/0}"><img th:src="@{/img/Logo.png}" height="30px"
+							width="30px" />
+						CRESCENDO </a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse"
+						data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse text-uppercase" id="navbarSupportedContent">
+						<ul class="navbar-nav ml-auto">
+							<li class="nav-item">
+								<a class="nav-link active" th:href="@{/user/profile}">
+									<img th:src="@{'/img/profileImg/'+${user.profile_image_name}}" height="25px"
+										width="25px" class="rounded-circle" />
+									<span th:text="${user.first_name+' '+user.last_name}"></span>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" th:href="@{/user/feed/0}">
+									<i class="fa-solid fa-newspaper"></i> Feed
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="notif nav-link" data-toggle="modal" data-target="#exampleModalnoti"
+									th:onclick="nRead([[${user.user_id}]],0)">
+									<i class="fa-solid fa-bell"></i> Notifications
+									<span class="button_badge" hidden></span>
+									<span class="count badge badge-light" th:text="${nCount}">0</span>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="msg nav-link" th:href="@{/user/chat}">
+									<i class="fa-solid fa-comments"></i> Messages
+									<span class="button_badge" hidden></span>
+									<span class="count badge badge-light" th:text=${mCount}>0</span>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" th:href="@{/user/search_user}">
+									<i class="fa-solid fa-magnifying-glass"></i> Search Users
+								</a>
+							</li>
+							<li class="nav-item">
+								<a id="sidebar-btn" class="btn btn-dark font-weight-bold" type="button">
+									<i class="fa-solid fa-bars"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</nav>
+			</div>
+			<!-- end Navbar -->
+
+			<!--navigation sidebar-->
+			<div class="sidebar">
+				<div class="card navigation">
+					<div class="profile-area text-center justify-content-center bg-success p-2">
+						<a class="nav-link text-white" th:href="@{/user/profile}">
+							<img th:src="@{'/img/profileImg/'+${user.profile_image_name}}" height="100px" width="100px"
+								class="rounded-circle" />
+							<h3 class="mt-2">
+								<span th:text="${user.first_name+' '+user.last_name}"></span>
+							</h3>
+							<small class="text-white-50" th:text="${'Username : '+user.username}"></small>
+						</a>
+					</div>
+					<div class="container mt-3 mb-5">
+						<ul class="list-group">
+							<li class="list-group-item list-group-item-success nav-list">
+								<a class="nav-link text-dark streched-link" th:href="@{/user/profile}"><i
+										class="fa-solid fa-address-card"></i> Profile
+									<span class="sr-only">(current)</span></a>
+							</li>
+							<li class="list-group-item list-group-item-success nav-list">
+								<a class="nav-link text-dark streched-link" th:href="@{/user/my_post/0}"><i
+										class="fa-solid fa-icons"></i> My Posts</a>
+							</li>
+							<li class="list-group-item list-group-item-success nav-list">
+								<a class="nav-link text-dark streched-link" th:href="@{/user/feed/0}"><i
+										class="fa-solid fa-newspaper"></i>
+									Feed </a>
+							</li>
+							<li class="list-group-item list-group-item-success nav-list">
+								<a class="nav-link text-dark streched-link" th:href="@{/user/chat}"><i
+										class="fa-solid fa-comments"></i>
+									Chat </a>
+							</li>
+							<li class="list-group-item list-group-item-success nav-list">
+								<a class="nav-link text-dark streched-link" th:href="@{/user/search_user}"><i
+										class="fa-solid fa-magnifying-glass"></i>
+									Search Users </a>
+							</li>
+							<li class="list-group-item list-group-item-success nav-list">
+								<a href="" class="nav-link text-dark streched-link" data-toggle="collapse"
+									data-target="#toggleExternalContent" aria-controls="toggleExternalContent"
+									aria-expanded="false" aria-label="Toggle navigation"><i
+										class="fa-solid fa-gear"></i>
+									Settings </a>
+							</li>
+							<div class="collapse" id="toggleExternalContent">
+								<div class="container">
+									<ul class="list-group">
+										<li class="list-group-item sub-nav-list">
+											<a class="nav-link text-dark streched-link"
+												th:href="@{/setting/settings_general}"><i
+													class="fa-solid fa-sliders"></i>
+												General </a>
+										</li>
+										<li class="list-group-item sub-nav-list">
+											<a class="nav-link text-dark streched-link"
+												th:href="@{/setting/settings_privacy}"><i
+													class="fa-solid fa-shield-halved"></i>
+												Privacy </a>
+										</li>
+										<li class="list-group-item sub-nav-list">
+											<a class="nav-link text-dark streched-link"
+												th:href="@{/setting/settings_help}"><i
+													class="fa-solid fa-circle-question"></i>
+												Help </a>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<li class="list-group-item list-group-item-success nav-list">
+								<a class="nav-link text-dark streched-link" th:href="@{/logout}"><i
+										class="fa-solid fa-right-from-bracket"></i> Logout</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!--end navigation sidebar-->
+
+			<!-- inserting the page content here -->
+			<div th:replace="${content}"></div>
+
+			<!-- Modal for notifications -->
+			<div class="modal fade" id="exampleModalnoti" tabindex="-1" aria-labelledby="exampleModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-header header-bg">
+							<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body card-bg">
+							<div id="notifications">
+								<!-- Notifications will be displayed here -->
+								<ul class="list-group">
+									<li class="list-group-item card-bg" id="no-notif">
+										<div class="row justify-content-md-center m-5 p-5">
+											<img th:src="@{/img/ghost.gif}" height="100px" width="100px"
+												class="rounded-circle" />
+										</div>
+										<div class="row justify-content-center">
+											<h2>No new notifications</h2>
+										</div>
+									</li>
+								</ul>
+								<ul class="list-group" th:each="i : ${#numbers.sequence(notify.size() - 1, 0, -1)}"
+									th:with="notif = ${notify[i]}">
+									<th:block th:if="${notif.postId!=null}">
+										<a th:href="@{'/user/postpage/'+${notif.postId.post_id}}">
+											<li class="list-group-item list-group-item-warning"
+												th:if="${!notif.readStatus}">
+												<div class="row">
+													<div class="col-md-2"><img
+															th:src="@{'/img/profileImg/'+${notif.senderUserId.profile_image_name}}"
+															height="30px" width="30px" class="rounded-circle" /></div>
+													<div class="col-md-10">
+														<span th:text="${notif.message}"></span><br>
+														<small th:text="${notif.timeStampStr}"></small>
+													</div>
+												</div>
+											</li>
+										</a>
+									</th:block>
+									<th:block th:if="${notif.postId==null}">
+										<a th:href="@{/user/profile}">
+											<li class="list-group-item list-group-item-warning"
+												th:if="${!notif.readStatus}">
+												<div class="row">
+													<div class="col-md-2"><img
+															th:src="@{'/img/profileImg/'+${notif.senderUserId.profile_image_name}}"
+															height="30px" width="30px" class="rounded-circle" /></div>
+													<div class="col-md-10">
+														<span th:text="${notif.message}"></span><br>
+														<small th:text="${notif.timeStampStr}"></small>
+													</div>
+												</div>
+											</li>
+										</a>
+									</th:block>
+								</ul>
+								<ul th:each="i : ${#numbers.sequence(notify.size() - 1, 0, -1)}"
+									th:with="notif = ${notify[i]}">
+									<th:block th:if="${notif.postId!=null}">
+										<a th:href="@{'/user/postpage/'+${notif.postId.post_id}}">
+											<li class="list-group-item" th:if="${notif.readStatus}">
+												<div class="row">
+													<div class="col-md-2"><img
+															th:src="@{'/img/profileImg/'+${notif.senderUserId.profile_image_name}}"
+															height="30px" width="30px" class="rounded-circle" /></div>
+													<div class="col-md-10">
+														<span th:text="${notif.message}"></span><br>
+														<small th:text="${notif.timeStampStr}"></small>
+													</div>
+												</div>
+											</li>
+										</a>
+									</th:block>
+									<th:block th:if="${notif.postId==null}">
+										<a th:href="@{/user/profile}">
+											<li class="list-group-item" th:if="${notif.readStatus}">
+												<div class="row">
+													<div class="col-md-2"><img
+															th:src="@{'/img/profileImg/'+${notif.senderUserId.profile_image_name}}"
+															height="30px" width="30px" class="rounded-circle" /></div>
+													<div class="col-md-10">
+														<span th:text="${notif.message}"></span><br>
+														<small th:text="${notif.timeStampStr}"></small>
+													</div>
+												</div>
+											</li>
+										</a>
+									</th:block>
+								</ul>
+							</div>
+						</div>
+						<div class="modal-footer header-bg">
+							<button type="button" id="clearNotifBtn" class="btn btn-danger"
+								th:onclick="clearNotifications([[${user.user_id}]])" disabled>Clear all</button>
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="notifications-container"></div>
+		</div>
+	</div>
+
+	<!-- Modal for report form -->
+	<div class="modal fade" id="report-post-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header header-bg">
+					<h5 class="modal-title" id="exampleModalLongTitle"></h5>
+					<button id="close-report-modal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body card-bg">
+					<div class="form-container">
+						<form id="reportForm">
+							<!-- hidden input for postId -->
+							<input type="hidden" id="pid" value="">
+							<!-- Step 1: Report Type -->
+							<div class="form-group form-step active" id="step1">
+								<h2>Select Report Type</h2>
+								<select class="form-control" id="reportType" onchange="showSubTypes()" required>
+									<option value="" disabled selected>Select...</option>
+									<option value="inappropriate">Inappropriate Content</option>
+									<option value="misinformation">Misinformation</option>
+									<option value="spam">Spam</option>
+									<option value="selfHarm">Self-Harm or Suicide</option>
+									<option value="terrorism">Terrorism or Organized Crime</option>
+									<option value="offensive">Offensive Language</option>
+									<option value="privacy">Privacy Violation</option>
+									<option value="others">Others</option>
+								</select>
+							</div>
+
+							<!-- Step 2: Subtypes -->
+							<div class="form-group form-step" id="step2">
+								<h2>Select Subtype</h2>
+								<select class="form-control" id="subType" onchange="showOptional()" required>
+									<!--Options will be populated dynamically-->
+								</select>
+								<button type="button" class="btn btn-secondary btn-lg btn-block mt-2"
+									onclick="moveToPreviousStep1()">Back</button>
+							</div>
+							<!--Step 3: Feedback (optional)-->
+							<div class="form-group form-step" id="step3">
+								<h2>Optional Feedback</h2>
+								<textarea class="form-control mb-2" id="feedback"
+									placeholder="Provide additional details (optional)"></textarea>
+								<button type="button" class="btn btn-secondary btn-lg btn-block"
+									onclick="moveToPreviousStep2()">Back</button>
+								<button class="btn btn-success btn-lg btn-block" type="button"
+									onclick="submitReport()">Submit Report</button>
+								<button id="report-form-reset" type="reset" hidden></button>
+							</div>
+							<div class="step-row">
+								<div id="progress"></div>
+								<div class="pr">step 1</div>
+								<div class="pr">step 2</div>
+								<div class="pr">step 3</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer header-bg"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery, Popper.js, and Bootstrap JS-->
+	<script src="https://code.jquery.com/jquery-3.7.0.slim.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"></script>
+	<!-- emoji area js cdn -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
+
+	<!--sweet alert cdn-->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!--user defined js-->
+	<script th:src="@{/js/script.js}"></script>
+
+	<script>
+		//post delete conformation function
+		function deletePost(post_id) {
+			Swal.fire({
+				title: 'Are you sure, you want to delete this post?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location = "/user/deletePost/" + post_id;
+				}
+			});
+		}
+		//delete comment conformation function
+		function deleteComment(comment_id) {
+			Swal.fire({
+				title: 'Are you sure, you want to delete this comment?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location = "/user/deleteComment/" + comment_id;
+				}
+			});
+		}
+		//delete reply conformation function
+		function deleteReply(reply_id) {
+			Swal.fire({
+				title: 'Are you sure, you want to delete this reply?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location = "/user/deleteReply/" + reply_id;
+				}
+			});
+		}
+	</script>
+
+	<script th:inline="javascript">
+		//fetching data from model attributes
+		/*<![CDATA[*/
+		var postId = /*[[${postId}]]*/ "0";
+		var likedPostId = /*[[${likedPostId}]]*/ "1";
+		var likeOnPost = /*[[${likeOnPost}]]*/ "2";
+		var user = /*[[${user}]]*/ "4";
+		var savedPostIds = /*[[${savedPostIds}]]*/ "5";
+		var notification = /*[[${notify}]]*/ "6";
+		var notificationsForPost = /*[[${notificationsForPost}]]*/ "7";
+		var follows = /*[[${follow}]]*/ "8";
+		var searchedUser = /*[[${searchedUser}]]*/ "9";
+		var pPageId = /*[[${p}]]*/ "10";
+		var likes = /*[[${likes}]]*/ "11";
+		var saves = /*[[${saves}]]*/ "12";
+		var ms = /*[[${ms}]]*/ "13";
+		var deleteCondition = /*[[${user.profile_image_name}]]*/"14";
+		/*]]>*/
+		// function running on page refresh
+		//for several reasons like changing icons
+		//for like and save 
+		window.onload = () => {
+
+			for (i = 0; i < ms?.length; i++) {
+				if (!ms[i].readStatus) {
+					$('#' + ms[i].senderUserId.username)?.removeAttr("hidden");
+					$('.msg .button_badge').removeAttr("hidden");
+				}
+			}
+
+			//handling notifications for posts and folowers
+			for (i = 0; i < notificationsForPost?.length; i++) {
+				sendNotification(notificationsForPost[i]);
+			}
+
+			//handling notification badges
+			if (notification?.length != 0) {
+				$("#no-notif").attr("hidden", "hidden");
+				$("#clearNotifBtn").removeAttr("disabled");
+			}
+			for (i = 0; i < notification?.length; i++) {
+				if (!notification[i].readStatus) {
+					$(".notif .button_badge").removeAttr("hidden");
+				}
+			}
+			//handling follow icon
+			for (i = 0; i < follows?.length; i++) {
+				if (follows[i]?.user_id.user_id == searchedUser?.user_id) {
+					$("#follow").attr("hidden", "hidden");
+					$("#unfollow").removeAttr("hidden");
+				}
+			}
+			//handling like and save icons
+			for (i = 0; i < postId?.length; i++) {
+				for (j = 0; j < likeOnPost[i].length; j++) {
+					if (likeOnPost[i][j].postId.post_id === postId[i] && likeOnPost[i].length > 2) {
+						$("#post-like-footer" + postId[i]).removeAttr("hidden");
+						$("#userLike1" + postId[i]).html(likeOnPost[i][0].userId.first_name + ", ");
+						$("#userLike2" + postId[i]).html(likeOnPost[i][1].userId.first_name);
+					} else if (likeOnPost[i][j].postId.post_id === postId[i] && likeOnPost[i].length === 1) {
+						$("#post-like-footer" + postId[i]).removeAttr("hidden");
+						$("#userLike1" + postId[i]).html(likeOnPost[i][0].userId.first_name);
+						$("#userLike3" + postId[i]).attr("hidden", "hidden");
+					} if (likeOnPost[i][j].postId.post_id === postId[i] && likeOnPost[i].length === 2) {
+						$("#post-like-footer" + postId[i]).removeAttr("hidden");
+						$("#userLike1" + postId[i]).html(likeOnPost[i][0].userId.first_name + " and ");
+						$("#userLike2" + postId[i]).html(likeOnPost[i][1].userId.first_name);
+						$("#userLike3" + postId[i]).attr("hidden", "hidden");
+					}
+				}
+			}
+			//handling icons on particular post page
+			for (i = 0; i < postId?.length; i++) {
+				for (j = 0; j < likedPostId?.length; j++) {
+					if (postId[i] === likedPostId[j]) {
+						$("#like" + likedPostId[j]).attr("hidden", "hidden");
+						$("#unlike" + likedPostId[j]).removeAttr("hidden");
+					}
+				}
+			}
+
+			for (i = 0; i < postId?.length; i++) {
+				for (j = 0; j < savedPostIds?.length; j++) {
+					if (postId[i] === savedPostIds[j]) {
+						$("#save" + savedPostIds[j]).attr("hidden", "hidden");
+						$("#unsave" + savedPostIds[j]).removeAttr("hidden");
+					}
+				}
+			}
+			for (i = 0; i < likes?.length; i++) {
+				if (user.user_id === likes[i]?.userId.user_id && pPageId?.post_id === likes[i]?.postId.post_id) {
+					$("#plike" + pPageId.post_id).attr("hidden", "hidden");
+					$("#punlike" + pPageId.post_id).removeAttr("hidden");
+				}
+			}
+			for (i = 0; i < saves?.length; i++) {
+				if (pPageId?.post_id === saves[i]?.postId.post_id && user.user_id === saves[i]?.userId.user_id) {
+					$("#psave" + pPageId.post_id).attr("hidden", "hidden");
+					$("#punsave" + pPageId.post_id).removeAttr("hidden");
+				}
+			}
+			$("#comment").emojioneArea({
+				pickerPosition: "top",
+				inline: true
+			});
+			$("#message").emojioneArea({
+				pickerPosition: "top",
+				inline: true
+			});
+			if (deleteCondition != "default.png") {
+				deleteBtn.removeAttribute("hidden");
+			}
+		};
+	</script>
+
+	<div id="toast">This is our custom Toast text</div>
+
+</body>
+
+</html>

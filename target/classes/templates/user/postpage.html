@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section class="back mt-5 pt-4">
+		<div class="container">
+			<div class="card p-2 header-bg post-card">
+				<div class="row">
+					<!--section to show post content-->
+					<div class="col-md-6">
+						<div class="card card-bg">
+							<div class="card-body">
+								<div class="container">
+									<th:block>
+										<!--post title area-->
+										<div class="row">
+											<h4 class="col-md-4 mb-3"
+												style="color: darkgreen; text-decoration: underline;">
+												Post Title :</h4>
+											<h4 class="col-md-8 mb-3" th:text="${p.post_title}"></h4>
+										</div>
+									</th:block>
+									<br>
+									<!--post content-->
+									<th:block th:utext="${p.post_content}"></th:block>
+									<!--post image or video-->
+									<th:block th:if="${p.post_image_name != null}">
+										<hr>
+										<div class="row justify-content-md-center post-image" data-toggle="modal"
+											data-target="#exampleModalCenter">
+											<img th:src="@{'/img/postMedia/'+${p.post_image_name}}" />
+										</div>
+									</th:block>
+									<th:block th:if="${p.post_video_name != null}">
+										<hr>
+										<div class="row justify-content-center post-video">
+											<video controls>
+												<source th:src="@{'/img/postMedia/'+${p.post_video_name}}" />
+											</video>
+										</div>
+									</th:block>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--area to show user details who uploaded the post-->
+					<div class="col-md-6">
+						<div class="card card-bg">
+							<div class="card-header header-bg">
+								<div class="row">
+									<div class="col-md-2">
+										<a th:if="${!(user.user_id == p.user.user_id)}" class="stretched-link"
+											th:href="@{'/user/other_profile/'+${p.user.user_id}}"></a>
+										<a th:if="${user.user_id == p.user.user_id}" class="stretched-link"
+											th:href="@{/user/profile}"></a>
+										<img th:src="@{'/img/profileImg/'+${p.user.profile_image_name}}" height="50px"
+											width="50px" class="border border-success rounded-circle mt-2" />
+									</div>
+									<div class="col-md-8">
+										<h5 class="mb-1"><a class="stretched-link"
+												th:if="${!(user.user_id == p.user.user_id)}"
+												th:href="@{'/user/other_profile/'+${p.user.user_id}}"></a>
+											<a th:if="${user.user_id == p.user.user_id}" class="stretched-link"
+												th:href="@{/user/profile}"></a>
+											<span th:text="${p.user.first_name+' '+p.user.last_name}"></span>
+										</h5>
+										<small class="text-secondary" th:text="${p.date_str}"></small>
+									</div>
+									<div class="col-md-2" th:if="${user == p.user}">
+										<div class="dropdown">
+											<button class="btn dropdown-toggle" type="button" id="dropdownMenu2"
+												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<i class="fa-solid fa-pen"></i>
+											</button>
+											<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+												<form method="post" th:action="@{'/user/updatePost/'+${p.post_id}}">
+													<button type="submit" class="dropdown-item"><i
+															class="fa-solid fa-pen-to-square"></i>
+														Edit
+													</button>
+												</form>
+												<a href="#" th:onclick="|deletePost(${p.post_id})|"
+													class="dropdown-item" type="button"><i
+														class="fa-solid fa-trash"></i> Delete</a>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-2" th:if="${user != p.user}">
+										<div class="dropdown">
+											<button class="btn dropdown-toggle" type="button" id="dropdownMenu2"
+												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<i class="fa-solid fa-circle-exclamation"></i>
+											</button>
+											<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+												<button class="dropdown-item" type="button" data-toggle="modal"
+													data-target="#report-post-modal"><i
+														class="fa-solid fa-triangle-exclamation"></i> Report</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--comments and replies on the post-->
+							<div class="card-body">
+								<div class="container comment-container border border-info">
+									<div id="comment-container"></div>
+									<th:block th:each="i : ${#numbers.sequence(comments.size() - 1, 0, -1)}"
+										th:with="c = ${comments[i]}">
+										<th:block th:with="match=${user==c.user}" th:switch="${match}">
+											<div th:case="true">
+												<div class="row mt-2">
+													<div class="col-md-10 pl-5">
+														<div class="cmt">
+															<strong th:text="${c.user.username}"></strong>
+															<small class="text-muted"
+																th:text="${c.date_str}"></small><br>
+															<p th:text="${c.comment}"></p>
+														</div>
+														<small class="btn form-text text-muted ml-4 reply-btn"
+															data-toggle="collapse"
+															th:data-target="'#collapseExample'+${c.comment_id}"
+															aria-expanded="false"
+															th:aria-controls="'collapseExample'+${c.comment_id}">reply
+															<i class='bx bx-reply'></i></small>
+														<small class="btn form-text text-muted ml-4"
+															th:onclick="|deleteComment(${c.comment_id})|">delete
+															<i class="fa-regular fa-trash-can"></i>
+														</small>
+														<div class="collapse" th:id="'collapseExample'+${c.comment_id}">
+															<div class="card reply-card">
+																<th:block th:each="r : ${reply}">
+																	<div th:if="${r.postComments==c}">
+																		<div class="row cmt m-3">
+																			<strong
+																				th:text="${r.user.username}"></strong>
+																			<small class="text-muted"
+																				th:text="${r.date_str}"></small><br>
+																			<p th:text="${r.reply}"></p>
+																		</div>
+																		<small th:if="${r.user==user}"
+																			class="btn form-text text-muted ml-5"
+																			th:onclick="|deleteReply(${r.id})|">delete
+																			<i class="fa-regular fa-trash-can"></i>
+																		</small>
+																	</div>
+																</th:block>
+																<div th:id="${'reply-container'+c.comment_id}">
+																</div>
+															</div>
+															<div class="card reply-card p-2">
+																<div class="row">
+																	<div class="col-md-9">
+																		<textarea name="reply" type="text"
+																			th:id="${'reply'+c.comment_id}"
+																			class="form-control mr-sm-2 flex-grow-1 reply"
+																			placeholder="write your reply here..."></textarea>
+																	</div>
+																	<div class="col-md-1"><button
+																			class="btn btn-success my-2 my-sm-0"
+																			th:onclick="commentReply([[${p.post_id}]],[[${c.comment_id}]])">
+																			<i class="fa-solid fa-paper-plane"></i>
+																		</button>
+																	</div>
+																	<span class="text-muted" id="reply-req"></span>
+																	<span class="text-muted" id="reply-len"></span>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="col-md-2">
+														<img th:src="@{'/img/profileImg/'+${c.user.profile_image_name}}"
+															height="40px" width="40px" />
+													</div>
+												</div>
+											</div>
+											<div th:case="false">
+												<div class="row mt-2">
+													<div class="col-md-2">
+														<img th:src="@{'/img/profileImg/'+${c.user.profile_image_name}}"
+															height="40px" width="40px" />
+													</div>
+													<div class="col-md-10 pr-5">
+														<div class="cmt">
+															<strong th:text="${c.user.username}"></strong>
+															<small class="text-muted"
+																th:text="${c.date_str}"></small><br>
+															<p th:text="${c.comment}"></p>
+														</div>
+														<small class="btn form-text text-muted ml-4 reply-btn"
+															data-toggle="collapse"
+															th:data-target="'#collapseExample'+${c.comment_id}"
+															aria-expanded="false"
+															th:aria-controls="'collapseExample'+${c.comment_id}">reply
+															<i style="font-size: 18px;" class='bx bx-reply'></i></small>
+														<div class="collapse" th:id="'collapseExample'+${c.comment_id}">
+															<div class="card reply-card">
+																<th:block th:each="r : ${reply}">
+																	<div th:if="${r.postComments==c}">
+																		<div class="row cmt m-3">
+																			<strong
+																				th:text="${r.user.username}"></strong>
+																			<small class="text-muted"
+																				th:text="${r.date_str}"></small><br>
+																			<p th:text="${r.reply}"></p>
+																		</div>
+																		<small th:if="${r.user==user}"
+																			class="btn form-text text-muted ml-5"
+																			th:onclick="|deleteReply(${r.id})|">delete
+																			<i class="fa-regular fa-trash-can"></i>
+																		</small>
+																	</div>
+																</th:block>
+																<div th:id="${'reply-container'+c.comment_id}">
+																</div>
+															</div>
+															<div class="card reply-card p-2">
+																<div class="row">
+																	<div class="col-md-9">
+																		<textarea name="reply" type="text"
+																			th:id="${'reply'+c.comment_id}"
+																			class="form-control mr-sm-2 flex-grow-1 reply"
+																			placeholder="write your reply here..."></textarea>
+																	</div>
+																	<div class="col-md-1">
+																		<button class="btn btn-success my-2 my-sm-0"
+																			th:onclick="commentReply([[${p.post_id}]],[[${c.comment_id}]])">
+																			<i class="fa-solid fa-paper-plane"></i>
+																		</button>
+																	</div>
+																	<span class="text-muted" id="reply-req"></span>
+																	<span class="text-muted" id="reply-len"></span>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</th:block>
+									</th:block>
+								</div>
+							</div>
+							<!--area showing the likes and the comments on the post-->
+							<div class="card-footer header-bg">
+								<div class="row">
+									<div class="btn col-md-1">
+										<i class="like fa-regular fa-heart fa-xl" th:id="'plike'+${p.post_id}"
+											th:onclick="like([[${p.post_id}]],[[${likes.size()}]])"></i>
+										<i class="unlike fa-solid fa-heart fa-xl" th:id="'punlike'+${p.post_id}"
+											th:onclick="unlike([[${p.post_id}]],[[${likes.size()}]])" hidden></i>
+									</div>
+									<div class="col-md-4">
+										<div class="btn form-text text-muted" th:id="'like-number'+${p.post_id}"
+											data-toggle="modal" th:data-target="'#exampleModalCenter'+${p.post_id}">
+											<small th:text="${likes.size()}"></small>
+											<small>Like(s)</small>
+										</div>
+									</div>
+									<div class="col-md">
+										<small class="form-text text-muted p-2"><span
+												th:text="${comments.size()}"></span>
+											Comment(s)</small>
+									</div>
+									<div class="btn col-md-1 mr-1">
+										<i class="save fa-regular fa-bookmark fa-xl" th:id="'psave'+${p.post_id}"
+											th:onclick="save([[${p.post_id}]])"></i>
+										<i class="unsave fa-solid fa-bookmark fa-xl" th:id="'punsave'+${p.post_id}"
+											th:onclick="unsave([[${p.post_id}]])" hidden></i>
+									</div>
+								</div>
+							</div>
+							<!--area to write comment-->
+							<div class="card-footer header-bg">
+								<div class="row">
+									<div class="col-md-10">
+										<textarea name="comment" type="text" id="comment"
+											class="form-control mr-sm-2 flex-grow-1"
+											placeholder="write your comment here..."></textarea>
+									</div>
+									<div class="col-md-2">
+										<button class="btn btn-success my-2 my-sm-0"
+											th:onclick="comment([[${p.post_id}]])">
+											<i class="fa-solid fa-paper-plane"></i>
+										</button>
+									</div>
+								</div>
+								<span class="text-muted" id="cmt-req"></span>
+								<span class="text-muted" id="cmt-len"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Modal to show list of users who liked the post -->
+			<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+				aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header header-bg">
+							<h5 class="modal-title" id="exampleModalLongTitle"></h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body card-bg">
+							<th:block th:if="${p.post_image_name != null}">
+								<div class="row justify-content-md-center show-img">
+									<img th:src="@{'/img/postMedia/'+${p.post_image_name}}" />
+								</div>
+							</th:block>
+						</div>
+						<div class="modal-footer header-bg">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade bd-example-modal-lg" th:id="'exampleModalCenter'+${p.post_id}" tabindex="-1"
+				role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header header-bg">
+							<h5 class="modal-title" id="exampleModalLongTitle">Likes</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body card-bg">
+							<ul class="list-group">
+								<li class="list-group-item list-group-item-success likes-on-post"
+									th:each="l : ${likes}">
+									<div class="row">
+										<div class="col-md-2">
+											<a th:if="${user.user_id==l.userId.user_id}" th:href="@{/user/profile}">
+												<img th:src="@{'/img/profileImg/'+${l.userId.profile_image_name}}"
+													height="40px" width="40px"
+													class="border border-secondary rounded-circle mt-2" />
+												<div class="text-muted online-dot"
+													th:id="'online-dot'+${l.userId.user_id}" hidden></div>
+											</a>
+											<a th:if="${user.user_id!=l.userId.user_id}"
+												th:href="@{'/user/other_profile/'+${l.userId.user_id}}">
+												<img th:src="@{'/img/profileImg/'+${l.userId.profile_image_name}}"
+													height="40px" width="40px"
+													class="border border-secondary rounded-circle mt-2" />
+												<div class="text-muted online-dot"
+													th:id="'online-dot'+${l.userId.user_id}" hidden></div>
+											</a>
+										</div>
+										<div class="col-md-8">
+											<a th:if="${user.user_id==l.userId.user_id}" th:href="@{/user/profile}">
+												<strong th:text="${l.userId.first_name}+' '+${l.userId.last_name}">
+												</strong><br>
+												<small th:text="${l.userId.username}"></small>
+											</a>
+											<a th:if="${user.user_id!=l.userId.user_id}"
+												th:href="@{'/user/other_profile/'+${l.userId.user_id}}">
+												<strong th:text="${l.userId.first_name}+' '+${l.userId.last_name}">
+												</strong><br>
+												<small th:text="${l.userId.username}"></small>
+											</a>
+										</div>
+										<div class="col-md-2">
+											<a class="btn btn-warning"
+												th:href="@{'/user/chat-box-personal/'+${l.userId.user_id}}"><i
+													class="fa-solid fa-message"></i></a>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="modal-footer header-bg">
+						</div>
+					</div>
+				</div>
+			</div>
+	</section>
+</body>
+
+</html>

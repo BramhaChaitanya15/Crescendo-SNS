@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" th:replace="user/profilebase::layout(~{::section})">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<section clsss="back">
+		<div class="container mt-5 p-5">
+			<!--button to go back to profile page-->
+			<div class="row m-2" th:if="${uname==user.username}">
+				<a th:href="@{/user/profile}" class="btn btn-warning btn-lg" tabindex="-1" role="button"><i
+						class="fa-solid fa-circle-left"></i> Go Back</a>
+			</div>
+			<div class="card text-dark card-bg">
+				<div class="card-header header-bg">
+					<h5>Followers List</h5>
+				</div>
+				<div class="card-body">
+					<!--no followers-->
+					<th:block th:if="${followers.size()==0}">
+						<h2>No one is following</h2>
+					</th:block>
+					<!--followers shown in table-->
+					<table class="table follow">
+						<tbody>
+							<th:block th:each="f : ${followers}">
+								<tr class="table-success">
+									<td>
+										<a th:href="@{'/user/other_profile/'+${f.user_id}}">
+											<div class="f-img">
+												<img th:src="@{'/img/profileImg/'+${f.profile_image_name}}"
+													height="40px" width="40px"
+													class="border border-secondary rounded-circle mt-2">
+												<div class="text-muted online-dot" th:id="'online-dot'+${f.user_id}"
+													hidden>
+												</div>
+											</div>
+										</a>
+									</td>
+									<td>
+										<a th:href="@{'/user/other_profile/'+${f.user_id}}">
+											<strong th:text="${f.first_name}+' '+${f.last_name}">
+											</strong><br>
+											<small th:text="${f.username}"></small>
+										</a>
+									</td>
+									<td class="text-right">
+										<a class="btn btn-warning"
+											th:href="@{'/user/chat-box-personal/'+${f.user_id}}"><i
+												class="fa-solid fa-message"></i></a>
+									</td>
+								</tr>
+							</th:block>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>
